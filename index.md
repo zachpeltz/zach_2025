@@ -5,4 +5,4 @@ description: Home Page
 hide: true
 ---
 
-My journey starts here.
+My journey starts here - Kickin' Projects
