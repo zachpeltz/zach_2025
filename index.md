@@ -5,4 +5,4 @@ description: Home Page
 hide: true
 ---
 
-My journey starts here - Kickin' Projects 2.02
+My journey starts here - Kickin' Projects 2.05
