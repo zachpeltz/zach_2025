@@ -5,4 +5,4 @@ description: Home Page
 hide: true
 ---
 
-My journey starts here - Kickin' Projects 2.07 - zach peltz
+My journey starts here - Kickin' Projects 2.08 - zach peltz
