@@ -42,11 +42,8 @@ Here is where I have lived:
     var http_source = "https://upload.wikimedia.org/wikipedia/commons/";
     var living_in_the_world = [
         {"flag": "0/01/Flag_of_California.svg", "greeting": "Hello guys", "description": "California - my whole life"},
-    ]; 
       {"flag": "c/cf/Flag_of_Canada.svg", "greeting": "Hi", "description": "Canada - visited 3 times"},
-    ];
    {"flag": "9/93/Flag_of_Bahamas.svg", "greeting": "Hola", "description": "Bahamas - visited 2 times by cruise"},
-    ];
     
     // 3a. Consider how to update style count for size of container
     // The grid-template-columns has been defined as dynamic with auto-fill and minmax
