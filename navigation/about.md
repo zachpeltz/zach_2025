@@ -7,6 +7,8 @@ permalink: /about/
 Creator of Student 2025 - Zach Peltz 
 16 yr old at Del Norte 2026
 ![alt text](image-1.png)
+
+Here is where I have lived: 
 <style>
     /* Style looks pretty compact, trace grid-container and grid-item in the code */
     .grid-container {
@@ -72,3 +74,8 @@ Creator of Student 2025 - Zach Peltz
         container.appendChild(gridItem);
     }
 </script>
+
+My life so far:
+Elementary School at Stone Ranch, San Diego CA
+Middle School at Oak Valley, San Diego CA
+High School at Del Norte, San Diego CA - Graduating in 2026
