@@ -4,7 +4,7 @@ title: About
 permalink: /about/
 ---
 
-# I am Zach Peltz and I am 16 yrs. old
+# I am Zach Peltz and I am 16 yrs. old 👍
 
 Here is where I have lived: 
 (flag from wikipedia)
