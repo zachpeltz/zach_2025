@@ -4,8 +4,7 @@ title: About
 permalink: /about/
 ---
 
-Creator of Student 2025 - Zach Peltz 
-16 yr old at Del Norte 2026
+# I am Zach Peltz and I am 16 yrs. old
 
 Here is where I have lived: 
 (flag from wikipedia)
@@ -42,9 +41,7 @@ Here is where I have lived:
     var http_source = "https://upload.wikimedia.org/wikipedia/commons/";
     var living_in_the_world = [
         {"flag": "0/01/Flag_of_California.svg", "greeting": "Hello guys", "description": "California - my whole life"},
-
-      {"flag": "c/cf/Flag_of_Canada.svg", "greeting": "Hi", "description": "Canada - visited 3 times"},
-   {"flag": "9/93/Flag_of_Bahamas.svg", "greeting": "Hola", "description": "Bahamas - visited 2 times by cruise"},
+      {"flag": "c/cf/Flag_of_Canada.svg", "greeting": "Hi", "description": "Canada - visited 2 times"},
     ];
     // 3a. Consider how to update style count for size of container
     // The grid-template-columns has been defined as dynamic with auto-fill and minmax
@@ -79,8 +76,8 @@ Here is where I have lived:
 
 My life so far:
 
-Elementary School at Stone Ranch, San Diego CA
-
-Middle School at Oak Valley, San Diego CA
-
-High School at Del Norte, San Diego CA - Graduating in 2026
+- Elementary School at Stone Ranch, San Diego CA
+- Middle School at Oak Valley, San Diego CA
+- High School at Del Norte, San Diego CA - Graduating in 2026
+- Played basketball, baseball, soccer, tennis, and golf most being on teams
+- Lived in Cali my whole life and the both the weather and people especially in San Diego are nice
