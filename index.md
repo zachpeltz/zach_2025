@@ -4,6 +4,7 @@ title: Student Home
 description: Home Page
 hide: true
 ---
+{% include nav/home.html %}
 
 This is my website: some links below
 <img src="https://media.tenor.com/xKJ0blGgIlQAAAAM/dance-happy.gif" alt="mario gif">
