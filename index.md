@@ -5,7 +5,7 @@ description: Home Page
 hide: true
 ---
 
-My journey starts here. Kickin Projects 1.3
+This is my website: some links below
 <img src="https://media.tenor.com/xKJ0blGgIlQAAAAM/dance-happy.gif" alt="mario gif">
 
 <ul>
