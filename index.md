@@ -5,8 +5,11 @@ description: Home Page
 hide: true
 ---
 
-This is my website: some links below
-
+<ul>
+  <li><a href="https://zachpeltz.github.io/zach_2025/blogs/">Blogs</a></li>
+  <li><a href="https://zachpeltz.github.io/zach_2025/about/">About</a></li>
+  <li><a href="https://zachpeltz.github.io/zach_2025/devops/hacks">Hacks</a></li>
+</ul>
 <style>
 ul {
   list-style-type: none;
@@ -31,8 +34,4 @@ li a:hover {
 </style>
 
 <img src="https://media.tenor.com/xKJ0blGgIlQAAAAM/dance-happy.gif" alt="mario gif">
-<ul>
-  <li><a href="https://zachpeltz.github.io/zach_2025/blogs/">Blogs</a></li>
-  <li><a href="https://zachpeltz.github.io/zach_2025/about/">About</a></li>
-  <li><a href="https://zachpeltz.github.io/zach_2025/devops/hacks">Hacks</a></li>
-</ul>
+This is my website: some links above
