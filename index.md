@@ -12,4 +12,3 @@ This is my website: some links below
   <li><a href="https://zachpeltz.github.io/zach_2025/blogs/">Blogs</a></li>
   <li><a href="https://zachpeltz.github.io/zach_2025/about/">About</a></li>
   <li><a href="https://zachpeltz.github.io/zach_2025/devops/hacks">Hacks</a></li>
-</ul>
