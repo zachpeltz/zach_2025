@@ -4,7 +4,7 @@ title: Snake
 permalink: /snake/
 ---
 
-Press any key to start!
+Press any key to start! (Use W/A/S/D or Arrow keys to control the snake.)
 
 <canvas id="snakeGame" width="400" height="400"></canvas>
 
@@ -35,13 +35,20 @@ Press any key to start!
   };
   let score = 0;
 
+  // Prevent page scrolling when using arrow keys and WASD
+  window.addEventListener('keydown', function(event) {
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd'].includes(event.key)) {
+      event.preventDefault();
+    }
+  });
+
   document.addEventListener('keydown', changeDirection);
 
   function changeDirection(event) {
-    if (event.key === 'ArrowUp' && direction !== 'DOWN') direction = 'UP';
-    else if (event.key === 'ArrowDown' && direction !== 'UP') direction = 'DOWN';
-    else if (event.key === 'ArrowLeft' && direction !== 'RIGHT') direction = 'LEFT';
-    else if (event.key === 'ArrowRight' && direction !== 'LEFT') direction = 'RIGHT';
+    if ((event.key === 'ArrowUp' || event.key === 'w') && direction !== 'DOWN') direction = 'UP';
+    else if ((event.key === 'ArrowDown' || event.key === 's') && direction !== 'UP') direction = 'DOWN';
+    else if ((event.key === 'ArrowLeft' || event.key === 'a') && direction !== 'RIGHT') direction = 'LEFT';
+    else if ((event.key === 'ArrowRight' || event.key === 'd') && direction !== 'LEFT') direction = 'RIGHT';
   }
 
   function drawSnake() {
@@ -103,5 +110,5 @@ Press any key to start!
     ctx.fillText('Score: ' + score, 10, 20);
   }
 
-  let game = setInterval(draw, 100);
+  let game = setInterval(draw, 150);  // Slowed down the game
 </script>
