@@ -35,3 +35,29 @@ li a:hover {
 
 <img src="https://media.tenor.com/xKJ0blGgIlQAAAAM/dance-happy.gif" alt="mario gif">
 This is my website: some links above
+
+<div id="game">
+  <p>Guess a number between 1 and 1000!</p>
+  <input type="number" id="guess" placeholder="Enter your guess here">
+  <button onclick="checkGuess()">Submit Guess</button>
+  <p id="result"></p>
+</div>
+
+<script>
+  const randomNumber = Math.floor(Math.random() * 1000) + 1;
+  let attempts = 0;
+
+  function checkGuess() {
+    const userGuess = parseInt(document.getElementById('guess').value);
+    const result = document.getElementById('result');
+    attempts++;
+    
+    if (userGuess === randomNumber) {
+      result.textContent = `Congratulations! You guessed the number ${randomNumber} correctly in ${attempts} attempts.`;
+    } else if (userGuess > randomNumber) {
+      result.textContent = "Too high! Try again.";
+    } else {
+      result.textContent = "Too low! Try again.";
+    }
+  }
+</script>
