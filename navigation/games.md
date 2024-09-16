@@ -35,92 +35,127 @@ Choose Rock, Paper, or Scissors and see if you can beat the computer!
   }
 </script> 
 
-Anagram game:
-- Words must be at least 3 letters long.
-- Use all 7 letters for a **pangram** and earn extra points!
 
-<p id="letters"></p>
+Minesweeper Game:
+Click a cell to reveal it. Avoid the mines!
 
-Click on letters to spell a word:  
-<p id="currentWord"></p>
-<button onclick="submitWord()">Submit Word</button>
+<div id="grid"></div>
+<p id="status"></p>
 <button onclick="resetGame()">Reset Game</button>
-<p id="timer"></p>
-<p id="score"></p>
-<p id="feedback"></p>
-<p id="leaderboard"></p>
 
 <script>
-const wordList = {
-  "example": ["ex", "map", "lamp", "example", "amp", "plea"], // Replace with an actual wordlist
-  "letters": ["letter", "settle", "set", "let", "test", "rest"]
-  // Add more sets of 7 letters and words
-};
-let currentLetters, correctWords, score, timer, interval, usedWords = [];
+const gridSize = 8;
+const mineCount = 10;
+let grid = [];
+let revealedCells = 0;
 
-function startGame() {
-  let keys = Object.keys(wordList);
-  let randomKey = keys[Math.floor(Math.random() * keys.length)];
-  currentLetters = randomKey.split('');
-  correctWords = wordList[randomKey];
-  score = 0;
-  usedWords = [];
-
-  document.getElementById("letters").textContent = currentLetters.join(' ');
-  document.getElementById("currentWord").textContent = '';
-  document.getElementById("feedback").textContent = '';
-  document.getElementById("score").textContent = `Score: ${score}`;
-  document.getElementById("leaderboard").textContent = '';
-
-  startTimer(60);
-}
-
-function startTimer(seconds) {
-  clearInterval(interval);
-  timer = seconds;
-  interval = setInterval(function() {
-    timer--;
-    document.getElementById("timer").textContent = `Time left: ${timer}s`;
-    if (timer <= 0) {
-      clearInterval(interval);
-      endGame();
-    }
-  }, 1000);
-}
-
-function clickLetter(letter) {
-  document.getElementById("currentWord").textContent += letter;
-}
-
-function submitWord() {
-  let word = document.getElementById("currentWord").textContent;
-  if (word.length >= 3 && correctWords.includes(word) && !usedWords.includes(word)) {
-    usedWords.push(word);
-    let points = word.length;
-    if (word.length === 7) {
-      points += 10; // Bonus for pangram
-      document.getElementById("feedback").textContent = "Pangram! Extra points!";
-    } else {
-      document.getElementById("feedback").textContent = `Great! You scored ${points} points.`;
-    }
-    score += points;
-    document.getElementById("score").textContent = `Score: ${score}`;
-  } else {
-    document.getElementById("feedback").textContent = "Invalid word or already used.";
+function createGrid() {
+  let minePositions = new Set();
+  while (minePositions.size < mineCount) {
+    minePositions.add(Math.floor(Math.random() * gridSize * gridSize));
   }
-  document.getElementById("currentWord").textContent = '';
+
+  grid = [];
+  revealedCells = 0;
+  document.getElementById("grid").innerHTML = '';
+  document.getElementById("status").textContent = '';
+
+  for (let i = 0; i < gridSize; i++) {
+    let row = [];
+    let rowDiv = document.createElement('div');
+    for (let j = 0; j < gridSize; j++) {
+      let cell = {
+        isMine: minePositions.has(i * gridSize + j),
+        revealed: false,
+        adjacentMines: 0
+      };
+      row.push(cell);
+
+      let button = document.createElement('button');
+      button.style.width = '40px';
+      button.style.height = '40px';
+      button.onclick = () => revealCell(i, j);
+      button.id = `cell-${i}-${j}`;
+      rowDiv.appendChild(button);
+    }
+    grid.push(row);
+    document.getElementById("grid").appendChild(rowDiv);
+  }
+
+  calculateAdjacentMines();
+}
+
+function calculateAdjacentMines() {
+  for (let i = 0; i < gridSize; i++) {
+    for (let j = 0; j < gridSize; j++) {
+      if (!grid[i][j].isMine) {
+        let mines = 0;
+        for (let x = -1; x <= 1; x++) {
+          for (let y = -1; y <= 1; y++) {
+            if (i + x >= 0 && i + x < gridSize && j + y >= 0 && j + y < gridSize) {
+              if (grid[i + x][j + y].isMine) mines++;
+            }
+          }
+        }
+        grid[i][j].adjacentMines = mines;
+      }
+    }
+  }
+}
+
+function revealCell(x, y) {
+  if (grid[x][y].revealed) return;
+  grid[x][y].revealed = true;
+
+  let button = document.getElementById(`cell-${x}-${y}`);
+  if (grid[x][y].isMine) {
+    button.textContent = '💣';
+    button.style.backgroundColor = 'red';
+    document.getElementById("status").textContent = 'Game Over!';
+    revealAllMines();
+  } else {
+    button.textContent = grid[x][y].adjacentMines || '';
+    button.disabled = true;
+    button.style.backgroundColor = '#ddd';
+    revealedCells++;
+
+    if (grid[x][y].adjacentMines === 0) {
+      revealAdjacentCells(x, y);
+    }
+
+    if (revealedCells === gridSize * gridSize - mineCount) {
+      document.getElementById("status").textContent = 'You Win!';
+    }
+  }
+}
+
+function revealAdjacentCells(x, y) {
+  for (let i = -1; i <= 1; i++) {
+    for (let j = -1; j <= 1; j++) {
+      if (x + i >= 0 && x + i < gridSize && y + j >= 0 && y + j < gridSize) {
+        if (!grid[x + i][y + j].revealed && !grid[x + i][y + j].isMine) {
+          revealCell(x + i, y + j);
+        }
+      }
+    }
+  }
+}
+
+function revealAllMines() {
+  for (let i = 0; i < gridSize; i++) {
+    for (let j = 0; j < gridSize; j++) {
+      if (grid[i][j].isMine && !grid[i][j].revealed) {
+        let button = document.getElementById(`cell-${i}-${j}`);
+        button.textContent = '💣';
+        button.style.backgroundColor = 'red';
+      }
+    }
+  }
 }
 
 function resetGame() {
-  endGame();
-  startGame();
+  createGrid();
 }
 
-function endGame() {
-  document.getElementById("leaderboard").textContent = `Final Score: ${score}. Refresh to play again.`;
-  clearInterval(interval);
-}
-
-// Initialize game on page load
-startGame();
+createGrid();
 </script>
