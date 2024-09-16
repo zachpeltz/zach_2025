@@ -117,3 +117,78 @@ function resetGame() {
 
 createBoard();
 </script>
+
+Paintball 2 Player Game:
+Player 1 and Player 2, take turns shooting! First to get hit 3 times loses.
+
+<div id="gameArea"></div>
+<p id="gameStatus"></p>
+<button onclick="resetGame()">Start New Game</button>
+
+<script>
+let player1Lives = 3;
+let player2Lives = 3;
+let currentPlayer = 1;
+let gameActive = true;
+
+function createBoard() {
+  let gameHTML = '<table>';
+  for (let i = 0; i < 5; i++) {
+    gameHTML += '<tr>';
+    for (let j = 0; j < 5; j++) {
+      gameHTML += `<td onclick="shoot(${i}, ${j})" style="width: 50px; height: 50px; text-align: center; border: 1px solid black; cursor: pointer;"> </td>`;
+    }
+    gameHTML += '</tr>';
+  }
+  gameHTML += '</table>';
+  document.getElementById('gameArea').innerHTML = gameHTML;
+  document.getElementById('gameStatus').textContent = "Player 1's turn! (3 lives each)";
+}
+
+function shoot(x, y) {
+  if (!gameActive) return;
+
+  const hit = Math.random() < 0.5; // 50% chance of hitting the opponent
+  if (hit) {
+    if (currentPlayer === 1) {
+      player2Lives--;
+      alert("Player 1 hits Player 2!");
+    } else {
+      player1Lives--;
+      alert("Player 2 hits Player 1!");
+    }
+  } else {
+    alert(`Player ${currentPlayer} missed!`);
+  }
+
+  checkGameOver();
+  switchPlayer();
+}
+
+function switchPlayer() {
+  if (gameActive) {
+    currentPlayer = currentPlayer === 1 ? 2 : 1;
+    document.getElementById('gameStatus').textContent = `Player ${currentPlayer}'s turn! Player 1: ${player1Lives} lives, Player 2: ${player2Lives} lives`;
+  }
+}
+
+function checkGameOver() {
+  if (player1Lives <= 0) {
+    document.getElementById('gameStatus').textContent = "Player 2 wins!";
+    gameActive = false;
+  } else if (player2Lives <= 0) {
+    document.getElementById('gameStatus').textContent = "Player 1 wins!";
+    gameActive = false;
+  }
+}
+
+function resetGame() {
+  player1Lives = 3;
+  player2Lives = 3;
+  currentPlayer = 1;
+  gameActive = true;
+  createBoard();
+}
+
+createBoard();
+</script>
