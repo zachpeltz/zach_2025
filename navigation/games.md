@@ -118,77 +118,129 @@ function resetGame() {
 createBoard();
 </script>
 
-Paintball 2 Player Game:
-Player 1 and Player 2, take turns shooting! First to get hit 3 times loses.
-
-<div id="gameArea"></div>
-<p id="gameStatus"></p>
-<button onclick="resetGame()">Start New Game</button>
-
+Dinosaur Game: Jump with W/Up arrow and crouch/duck with s or down arrow.
 <script>
-let player1Lives = 3;
-let player2Lives = 3;
-let currentPlayer = 1;
-let gameActive = true;
+let canvas, ctx;
+let dino, obstacles = [], score = 0, lives = 3;
+let isJumping = false, isDucking = false;
+let jumpHeight = 0, jumpSpeed = 12, jumpDuration = 20;
+let gameSpeed = 2, obstacleSpeed = 4;
+let obstacleTimer = 0, obstacleInterval = 100;
+let gameOver = false;
 
-function createBoard() {
-  let gameHTML = '<table>';
-  for (let i = 0; i < 5; i++) {
-    gameHTML += '<tr>';
-    for (let j = 0; j < 5; j++) {
-      gameHTML += `<td onclick="shoot(${i}, ${j})" style="width: 50px; height: 50px; text-align: center; border: 1px solid black; cursor: pointer;"> </td>`;
-    }
-    gameHTML += '</tr>';
-  }
-  gameHTML += '</table>';
-  document.getElementById('gameArea').innerHTML = gameHTML;
-  document.getElementById('gameStatus').textContent = "Player 1's turn! (3 lives each)";
+document.addEventListener('DOMContentLoaded', () => {
+    canvas = document.createElement('canvas');
+    ctx = canvas.getContext('2d');
+    canvas.width = 800;
+    canvas.height = 300;
+    document.body.appendChild(canvas);
+    
+    dino = { x: 50, y: 250, width: 50, height: 50, color: 'green' };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+    
+    requestAnimationFrame(gameLoop);
+});
+
+function handleKeyDown(e) {
+    if (e.key === 'w' || e.key === 'ArrowUp') isJumping = true;
+    if (e.key === 's' || e.key === 'ArrowDown') isDucking = true;
 }
 
-function shoot(x, y) {
-  if (!gameActive) return;
+function handleKeyUp(e) {
+    if (e.key === 'w' || e.key === 'ArrowUp') isJumping = false;
+    if (e.key === 's' || e.key === 'ArrowDown') isDucking = false;
+}
 
-  const hit = Math.random() < 0.5; // 50% chance of hitting the opponent
-  if (hit) {
-    if (currentPlayer === 1) {
-      player2Lives--;
-      alert("Player 1 hits Player 2!");
+function gameLoop() {
+    if (gameOver) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'red';
+        ctx.font = '30px Arial';
+        ctx.fillText('Game Over! Score: ' + score, 250, 150);
+        return;
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    updateGame();
+    drawGame();
+    
+    requestAnimationFrame(gameLoop);
+}
+
+function updateGame() {
+    // Jump logic
+    if (isJumping) {
+        if (jumpHeight < jumpDuration) {
+            dino.y -= jumpSpeed;
+            jumpHeight++;
+        } else if (jumpHeight < 2 * jumpDuration) {
+            dino.y += jumpSpeed;
+            jumpHeight++;
+        } else {
+            isJumping = false;
+            jumpHeight = 0;
+        }
+    }
+
+    // Duck logic
+    if (isDucking) {
+        dino.height = 30;
+        dino.y = 250;
     } else {
-      player1Lives--;
-      alert("Player 2 hits Player 1!");
+        dino.height = 50;
+        dino.y = 250;
     }
-  } else {
-    alert(`Player ${currentPlayer} missed!`);
-  }
 
-  checkGameOver();
-  switchPlayer();
+    // Move obstacles and check for collisions
+    obstacles.forEach(obstacle => {
+        obstacle.x -= obstacleSpeed;
+        if (obstacle.x < dino.x + dino.width &&
+            obstacle.x + obstacle.width > dino.x &&
+            (dino.y + dino.height > obstacle.y)) {
+            if (!isDucking) {
+                loseLife();
+            }
+            obstacle.x = -obstacle.width;  // Move obstacle out of view
+        }
+    });
+    
+    obstacles = obstacles.filter(obstacle => obstacle.x > -obstacle.width);
+
+    // Create new obstacles
+    obstacleTimer++;
+    if (obstacleTimer > obstacleInterval) {
+        obstacles.push({ x: canvas.width, y: 250, width: 20, height: 20, color: 'red' });
+        obstacleTimer = 0;
+        obstacleInterval = Math.max(50, obstacleInterval - 1);  // Increase speed
+    }
+
+    // Increase score
+    score = Math.floor((Date.now() - startTime) / 1000) * 100;
 }
 
-function switchPlayer() {
-  if (gameActive) {
-    currentPlayer = currentPlayer === 1 ? 2 : 1;
-    document.getElementById('gameStatus').textContent = `Player ${currentPlayer}'s turn! Player 1: ${player1Lives} lives, Player 2: ${player2Lives} lives`;
-  }
+function drawGame() {
+    ctx.fillStyle = dino.color;
+    ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+
+    obstacles.forEach(obstacle => {
+        ctx.fillStyle = obstacle.color;
+        ctx.fillRect(obstacle.x, obstacle.y - obstacle.height, obstacle.width, obstacle.height);
+    });
+
+    ctx.fillStyle = 'black';
+    ctx.font = '20px Arial';
+    ctx.fillText('Score: ' + score, 10, 20);
+    ctx.fillText('Lives: ' + lives, 10, 40);
 }
 
-function checkGameOver() {
-  if (player1Lives <= 0) {
-    document.getElementById('gameStatus').textContent = "Player 2 wins!";
-    gameActive = false;
-  } else if (player2Lives <= 0) {
-    document.getElementById('gameStatus').textContent = "Player 1 wins!";
-    gameActive = false;
-  }
+function loseLife() {
+    lives--;
+    if (lives <= 0) {
+        gameOver = true;
+    }
 }
 
-function resetGame() {
-  player1Lives = 3;
-  player2Lives = 3;
-  currentPlayer = 1;
-  gameActive = true;
-  createBoard();
-}
-
-createBoard();
+let startTime = Date.now();
 </script>
