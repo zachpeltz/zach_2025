@@ -35,127 +35,146 @@ Choose Rock, Paper, or Scissors and see if you can beat the computer!
   }
 </script> 
 
+- Left-click to reveal a tile.
+- Right-click to flag a suspected bomb.
+- Win by flagging all 8 suspected bombs and clearing the rest of the safe tiles.
 
-Minesweeper Game:
-Click a cell to reveal it. Avoid the mines!
-
-<div id="grid"></div>
+<table id="minesweeper"></table>
 <p id="status"></p>
 <button onclick="resetGame()">Reset Game</button>
 
 <script>
-const gridSize = 8;
-const mineCount = 10;
-let grid = [];
-let revealedCells = 0;
+const rows = 8;
+const cols = 8;
+const numBombs = 8;
+let board, bombLocations, revealedTiles, flaggedTiles, gameEnded;
 
-function createGrid() {
-  let minePositions = new Set();
-  while (minePositions.size < mineCount) {
-    minePositions.add(Math.floor(Math.random() * gridSize * gridSize));
-  }
-
-  grid = [];
-  revealedCells = 0;
-  document.getElementById("grid").innerHTML = '';
-  document.getElementById("status").textContent = '';
-
-  for (let i = 0; i < gridSize; i++) {
-    let row = [];
-    let rowDiv = document.createElement('div');
-    for (let j = 0; j < gridSize; j++) {
-      let cell = {
-        isMine: minePositions.has(i * gridSize + j),
-        revealed: false,
-        adjacentMines: 0
-      };
-      row.push(cell);
-
-      let button = document.createElement('button');
-      button.style.width = '40px';
-      button.style.height = '40px';
-      button.onclick = () => revealCell(i, j);
-      button.id = `cell-${i}-${j}`;
-      rowDiv.appendChild(button);
-    }
-    grid.push(row);
-    document.getElementById("grid").appendChild(rowDiv);
-  }
-
-  calculateAdjacentMines();
+function createBoard() {
+  board = Array(rows).fill().map(() => Array(cols).fill({ bomb: false, revealed: false, flagged: false }));
+  revealedTiles = 0;
+  flaggedTiles = 0;
+  gameEnded = false;
+  document.getElementById("status").textContent = "Game in progress...";
+  renderBoard();
 }
 
-function calculateAdjacentMines() {
-  for (let i = 0; i < gridSize; i++) {
-    for (let j = 0; j < gridSize; j++) {
-      if (!grid[i][j].isMine) {
-        let mines = 0;
-        for (let x = -1; x <= 1; x++) {
-          for (let y = -1; y <= 1; y++) {
-            if (i + x >= 0 && i + x < gridSize && j + y >= 0 && j + y < gridSize) {
-              if (grid[i + x][j + y].isMine) mines++;
-            }
-          }
-        }
-        grid[i][j].adjacentMines = mines;
+function placeBombs(excludeX, excludeY) {
+  bombLocations = new Set();
+  while (bombLocations.size < numBombs) {
+    let x = Math.floor(Math.random() * rows);
+    let y = Math.floor(Math.random() * cols);
+    if ((x === excludeX && y === excludeY) || bombLocations.has(`${x},${y}`)) continue;
+    bombLocations.add(`${x},${y}`);
+    board[x][y] = { bomb: true, revealed: false, flagged: false };
+  }
+  revealSafeArea(excludeX, excludeY);
+}
+
+function revealSafeArea(x, y) {
+  const directions = [[0,1], [1,0], [0,-1], [-1,0], [1,1], [1,-1], [-1,1], [-1,-1]];
+  let safeTiles = [[x, y]];
+
+  while (safeTiles.length < 15) {
+    let randomX = Math.floor(Math.random() * rows);
+    let randomY = Math.floor(Math.random() * cols);
+    if (!board[randomX][randomY].bomb && !safeTiles.some(([sx, sy]) => sx === randomX && sy === randomY)) {
+      safeTiles.push([randomX, randomY]);
+    }
+  }
+
+  safeTiles.forEach(([sx, sy]) => revealTile(sx, sy));
+}
+
+function renderBoard() {
+  let tableHTML = '';
+  for (let x = 0; x < rows; x++) {
+    tableHTML += '<tr>';
+    for (let y = 0; y < cols; y++) {
+      let cell = board[x][y];
+      if (cell.revealed) {
+        let bombsAround = countBombsAround(x, y);
+        tableHTML += `<td onclick="handleLeftClick(${x}, ${y})" oncontextmenu="handleRightClick(event, ${x}, ${y})" style="background-color: lightgray;">${cell.bomb ? '💣' : bombsAround || ''}</td>`;
+      } else if (cell.flagged) {
+        tableHTML += `<td onclick="handleLeftClick(${x}, ${y})" oncontextmenu="handleRightClick(event, ${x}, ${y})" style="background-color: lightblue;">🚩</td>`;
+      } else {
+        tableHTML += `<td onclick="handleLeftClick(${x}, ${y})" oncontextmenu="handleRightClick(event, ${x}, ${y})" style="background-color: darkgray;"></td>`;
       }
     }
+    tableHTML += '</tr>';
   }
+  document.getElementById('minesweeper').innerHTML = tableHTML;
 }
 
-function revealCell(x, y) {
-  if (grid[x][y].revealed) return;
-  grid[x][y].revealed = true;
+function handleLeftClick(x, y) {
+  if (gameEnded || board[x][y].revealed || board[x][y].flagged) return;
 
-  let button = document.getElementById(`cell-${x}-${y}`);
-  if (grid[x][y].isMine) {
-    button.textContent = '💣';
-    button.style.backgroundColor = 'red';
-    document.getElementById("status").textContent = 'Game Over!';
-    revealAllMines();
+  if (revealedTiles === 0) {
+    placeBombs(x, y);
+  }
+
+  revealTile(x, y);
+  checkWin();
+}
+
+function handleRightClick(event, x, y) {
+  event.preventDefault();
+  if (gameEnded || board[x][y].revealed) return;
+
+  if (board[x][y].flagged) {
+    board[x][y].flagged = false;
+    flaggedTiles--;
   } else {
-    button.textContent = grid[x][y].adjacentMines || '';
-    button.disabled = true;
-    button.style.backgroundColor = '#ddd';
-    revealedCells++;
-
-    if (grid[x][y].adjacentMines === 0) {
-      revealAdjacentCells(x, y);
-    }
-
-    if (revealedCells === gridSize * gridSize - mineCount) {
-      document.getElementById("status").textContent = 'You Win!';
-    }
+    board[x][y].flagged = true;
+    flaggedTiles++;
   }
+
+  renderBoard();
+  checkWin();
 }
 
-function revealAdjacentCells(x, y) {
-  for (let i = -1; i <= 1; i++) {
-    for (let j = -1; j <= 1; j++) {
-      if (x + i >= 0 && x + i < gridSize && y + j >= 0 && y + j < gridSize) {
-        if (!grid[x + i][y + j].revealed && !grid[x + i][y + j].isMine) {
-          revealCell(x + i, y + j);
-        }
-      }
-    }
+function revealTile(x, y) {
+  if (board[x][y].revealed || board[x][y].flagged) return;
+  board[x][y].revealed = true;
+  revealedTiles++;
+
+  if (board[x][y].bomb) {
+    document.getElementById('status').textContent = "Game over! You hit a bomb!";
+    gameEnded = true;
+  } else if (countBombsAround(x, y) === 0) {
+    revealAdjacentTiles(x, y);
   }
+
+  renderBoard();
 }
 
-function revealAllMines() {
-  for (let i = 0; i < gridSize; i++) {
-    for (let j = 0; j < gridSize; j++) {
-      if (grid[i][j].isMine && !grid[i][j].revealed) {
-        let button = document.getElementById(`cell-${i}-${j}`);
-        button.textContent = '💣';
-        button.style.backgroundColor = 'red';
-      }
+function revealAdjacentTiles(x, y) {
+  const directions = [[0,1], [1,0], [0,-1], [-1,0], [1,1], [1,-1], [-1,1], [-1,-1]];
+  directions.forEach(([dx, dy]) => {
+    let newX = x + dx, newY = y + dy;
+    if (newX >= 0 && newX < rows && newY >= 0 && newY < cols) {
+      revealTile(newX, newY);
     }
+  });
+}
+
+function countBombsAround(x, y) {
+  const directions = [[0,1], [1,0], [0,-1], [-1,0], [1,1], [1,-1], [-1,1], [-1,-1]];
+  return directions.reduce((count, [dx, dy]) => {
+    let newX = x + dx, newY = y + dy;
+    return count + (newX >= 0 && newX < rows && newY >= 0 && newY < cols && board[newX][newY].bomb ? 1 : 0);
+  }, 0);
+}
+
+function checkWin() {
+  if (flaggedTiles === numBombs && revealedTiles === rows * cols - numBombs) {
+    document.getElementById('status').textContent = "Congratulations! You've flagged all bombs and cleared the board!";
+    gameEnded = true;
   }
 }
 
 function resetGame() {
-  createGrid();
+  createBoard();
 }
 
-createGrid();
+resetGame();
 </script>
