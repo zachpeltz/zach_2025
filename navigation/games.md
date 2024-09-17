@@ -144,5 +144,4 @@ createBoard();
   }
 </script> 
 
-
 Choose Rock, Paper, or Scissors and see if you can beat the computer!
