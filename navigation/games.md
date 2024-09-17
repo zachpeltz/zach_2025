@@ -145,3 +145,116 @@ createBoard();
 </script> 
 
 Choose Rock, Paper, or Scissors and see if you can beat the computer!
+
+Dodge Game - don't hit the moving obstacles!
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 800;
+    canvas.height = 400;
+    document.body.appendChild(canvas);
+
+    let player = { x: 50, y: 300, width: 50, height: 50, dy: 0, grounded: true, ducking: false };
+    let obstacles = [];
+    let score = 0;
+    let gameOver = false;
+    let speed = 5;
+
+    function drawPlayer() {
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(player.x, player.y, player.width, player.height);
+    }
+
+    function drawObstacles() {
+        ctx.fillStyle = 'red';
+        obstacles.forEach(obstacle => {
+            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        });
+    }
+
+    function addObstacle() {
+        let height = Math.random() > 0.5 ? 50 : 100;
+        obstacles.push({ x: canvas.width, y: canvas.height - height, width: 50, height: height });
+    }
+
+    function updateObstacles() {
+        obstacles.forEach(obstacle => obstacle.x -= speed);
+        if (obstacles.length > 0 && obstacles[0].x + obstacles[0].width < 0) {
+            obstacles.shift();
+        }
+    }
+
+    function checkCollision() {
+        obstacles.forEach(obstacle => {
+            if (player.x < obstacle.x + obstacle.width && player.x + player.width > obstacle.x &&
+                player.y < obstacle.y + obstacle.height && player.y + player.height > obstacle.y) {
+                gameOver = true;
+            }
+        });
+    }
+
+    function updatePlayer() {
+        if (!player.grounded) {
+            player.dy += 0.8;
+            player.y += player.dy;
+            if (player.y + player.height >= canvas.height) {
+                player.y = canvas.height - player.height;
+                player.dy = 0;
+                player.grounded = true;
+            }
+        }
+
+        if (player.ducking) {
+            player.height = 25;
+        } else {
+            player.height = 50;
+        }
+    }
+
+    function gameLoop() {
+        if (!gameOver) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlayer();
+            drawObstacles();
+            updateObstacles();
+            updatePlayer();
+            checkCollision();
+            score++;
+            speed += 0.001;
+
+            if (Math.random() < 0.01) {
+                addObstacle();
+            }
+
+            ctx.font = '20px Arial';
+            ctx.fillText('Score: ' + Math.floor(score / 10), 10, 20);
+
+            requestAnimationFrame(gameLoop);
+        } else {
+            ctx.font = '50px Arial';
+            ctx.fillText('Game Over', canvas.width / 2 - 150, canvas.height / 2);
+        }
+    }
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'ArrowUp' || event.key === 'w') {
+            if (player.grounded) {
+                player.dy = -15;
+                player.grounded = false;
+            }
+        }
+        if (event.key === 'ArrowDown' || event.key === 's') {
+            player.ducking = true;
+        }
+    });
+
+    document.addEventListener('keyup', function(event) {
+        if (event.key === 'ArrowDown' || event.key === 's') {
+            player.ducking = false;
+        }
+    });
+
+    gameLoop();
+});
+</script>
