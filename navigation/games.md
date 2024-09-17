@@ -89,70 +89,63 @@ createBoard();
 </script>
 
 Subway Surfers Game - avoid the obstacles!
-
 <table id="gameBoard"></table>
 <p id="gameStatus">Press Start to Begin!</p>
-<p id="scoreBoard">Best Score: 0 | Best Time: 0s</p>
-<p id="currentScore">Score: 0 | Time: 0s</p>
+<p id="scoreBoard">Best Score: 0 | Time: 0s</p>
 <button onclick="startGame()">Start Game</button>
 <button onclick="resetGame()">Reset Game</button>
 
 <script>
-let playerLane, score, time, gameActive, bestScore = 0, bestTime = 0, intervalId, lanes;
-let obstacleLane;
-const totalLanes = 3; // Number of lanes
-let obstacleSpeed = 1000; // Speed of obstacle
+let playerLane = 1; // Start player in the middle lane
+let score = 0, bestScore = 0, time = 0, gameActive = false, intervalId;
+const totalLanes = 3, obstacleSpeed = 1000;
+let obstacleLane = -1;
 
-// Initialize game
+// Initialize game board
 function createBoard() {
   let boardHTML = '';
   for (let i = 0; i < totalLanes; i++) {
-    boardHTML += '<tr>';
-    boardHTML += `<td id="lane${i}" style="width: 100px; height: 100px; text-align: center; font-size: 24px; border: 1px solid black;"></td>`;
-    boardHTML += '</tr>';
+    boardHTML += `<tr><td id="lane${i}" style="width: 100px; height: 100px; text-align: center; border: 1px solid black;"></td></tr>`;
   }
   document.getElementById("gameBoard").innerHTML = boardHTML;
 }
 
+// Start the game
 function startGame() {
-  playerLane = 1; // Start in the middle lane
+  if (gameActive) return;
+  gameActive = true;
   score = 0;
   time = 0;
-  gameActive = true;
-  obstacleSpeed = 1000;
-  
-  createBoard();
-  document.getElementById(`lane${playerLane}`).textContent = 'P'; // Place player on the board
+  playerLane = 1; // Player starts in the middle lane
   document.getElementById("gameStatus").textContent = "Game Started!";
-  
-  intervalId = setInterval(gameLoop, obstacleSpeed); // Start obstacle generation
-  startTimer();
+  document.getElementById("lane1").textContent = 'P'; // Show player
+
+  intervalId = setInterval(gameLoop, obstacleSpeed); // Start obstacle loop
+  startTimer(); // Start timer
 }
 
+// Game loop for obstacles
 function gameLoop() {
+  if (!gameActive) return;
   generateObstacle();
-  moveObstacle();
+  checkCollision();
 }
 
+// Generate a random obstacle
 function generateObstacle() {
   obstacleLane = Math.floor(Math.random() * totalLanes);
-  document.getElementById(`lane${obstacleLane}`).textContent = 'X'; // Display obstacle
-}
+  document.getElementById(`lane${obstacleLane}`).textContent = 'X'; // Show obstacle
 
-function moveObstacle() {
   setTimeout(() => {
-    if (obstacleLane === playerLane) {
-      gameOver();
-    } else {
-      document.getElementById(`lane${obstacleLane}`).textContent = ''; // Clear obstacle
-    }
-  }, obstacleSpeed); 
+    document.getElementById(`lane${obstacleLane}`).textContent = ''; // Clear obstacle after 1 second
+    score++;
+    document.getElementById("scoreBoard").textContent = `Best Score: ${bestScore} | Time: ${time}s`;
+  }, obstacleSpeed);
 }
 
-// Handle player movement with arrow keys
+// Move player up or down
 document.onkeydown = function(e) {
   if (!gameActive) return;
-
   if (e.key === 'ArrowUp' && playerLane > 0) {
     movePlayerTo(playerLane - 1);
   } else if (e.key === 'ArrowDown' && playerLane < totalLanes - 1) {
@@ -160,46 +153,52 @@ document.onkeydown = function(e) {
   }
 };
 
-// Move player
+// Move player to a new lane
 function movePlayerTo(newLane) {
-  document.getElementById(`lane${playerLane}`).textContent = ''; // Clear old position
+  document.getElementById(`lane${playerLane}`).textContent = ''; // Clear previous position
   playerLane = newLane;
-  document.getElementById(`lane${playerLane}`).textContent = 'P'; // Show player in new lane
+  document.getElementById(`lane${playerLane}`).textContent = 'P'; // Show player in the new lane
 }
 
-// Timer
-function startTimer() {
-  setInterval(() => {
-    if (gameActive) {
-      time++;
-      document.getElementById("currentScore").textContent = `Score: ${score} | Time: ${time}s`;
-    }
-  }, 1000);
+// Check if player collides with an obstacle
+function checkCollision() {
+  if (obstacleLane === playerLane) {
+    gameOver();
+  }
 }
 
-// Game over
+// End the game
 function gameOver() {
   clearInterval(intervalId);
   gameActive = false;
   document.getElementById("gameStatus").textContent = "Game Over!";
-
-  if (score > bestScore) {
-    bestScore = score;
-  }
-  if (time > bestTime) {
-    bestTime = time;
-  }
-  document.getElementById("scoreBoard").textContent = `Best Score: ${bestScore} | Best Time: ${bestTime}s`;
+  if (score > bestScore) bestScore = score;
+  document.getElementById("scoreBoard").textContent = `Best Score: ${bestScore} | Time: ${time}s`;
 }
 
-// Reset game but keep best scores
+// Timer function
+function startTimer() {
+  const timerInterval = setInterval(() => {
+    if (!gameActive) {
+      clearInterval(timerInterval);
+    } else {
+      time++;
+      document.getElementById("scoreBoard").textContent = `Best Score: ${bestScore} | Time: ${time}s`;
+    }
+  }, 1000);
+}
+
+// Reset the game but keep best score
 function resetGame() {
   clearInterval(intervalId);
   gameActive = false;
-  document.getElementById("currentScore").textContent = "Score: 0 | Time: 0s";
+  score = 0;
+  time = 0;
   document.getElementById("gameStatus").textContent = "Press Start to Begin!";
-  createBoard();
+  document.getElementById("scoreBoard").textContent = `Best Score: ${bestScore} | Time: ${time}s`;
+  createBoard(); // Reset the board
 }
 
+// Initialize the game board
 createBoard();
 </script>
