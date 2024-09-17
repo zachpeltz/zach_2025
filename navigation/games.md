@@ -88,7 +88,7 @@ function resetGame() {
 createBoard();
 </script>
 
-Subway Surfers Game - try to dodge the obstacles and score points!
+Subway Surfers Game
 <table id="gameBoard"></table>
 <p id="gameStatus">Press Start to Begin!</p>
 <p id="scoreBoard">Best Score: 0 | Best Time: 0s</p>
@@ -108,12 +108,11 @@ function createBoard() {
   for (let i = 0; i < lanes; i++) {
     boardHTML += '<tr>';
     for (let j = 0; j < 1; j++) {
-      boardHTML += `<td id="lane${i}" style="width: 100px; height: 100px; text-align: center; font-size: 24px;"></td>`;
+      boardHTML += `<td id="lane${i}" style="width: 100px; height: 100px; text-align: center; font-size: 24px; border: 1px solid black;"></td>`;
     }
     boardHTML += '</tr>';
   }
   document.getElementById("gameBoard").innerHTML = boardHTML;
-  document.getElementById(`lane${playerLane}`).textContent = 'P'; // Show player in the starting lane
 }
 
 // Initialize game variables and start the game
@@ -125,6 +124,7 @@ function startGame() {
   obstacleSpeed = 1000;
 
   createBoard();
+  document.getElementById(`lane${playerLane}`).textContent = 'P'; // Show player in the starting lane
   document.getElementById("gameStatus").textContent = "Game Started!";
   intervalId = setInterval(gameLoop, obstacleSpeed);
   startTimer();
