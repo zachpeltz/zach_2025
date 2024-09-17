@@ -148,89 +148,133 @@ Choose Rock, Paper, or Scissors and see if you can beat the computer!
 
 Dodge Game - don't hit the moving obstacles and score points as you go!
 
-<script>
-  let canvas, ctx;
-  let dino;
-  let obstacles = [];
-  let score = 0;
-  let lives = 3;
-  let keys = {};
-  let gameInterval;
-  let obstacleInterval;
-  
-  function setup() {
-    canvas = document.createElement('canvas');
-    canvas.width = 800;
-    canvas.height = 400;
-    document.body.appendChild(canvas);
-    ctx = canvas.getContext('2d');
-    
-    dino = { x: 50, y: 150, width: 40, height: 40 };
-    
-    document.addEventListener('keydown', (e) => keys[e.key] = true);
-    document.addEventListener('keyup', (e) => keys[e.key] = false);
-    
-    gameInterval = setInterval(updateGame, 1000 / 60);
-    obstacleInterval = setInterval(createObstacle, 2000);
-  }
 
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; background-color: #87CEEB; }
+    #score { position: absolute; top: 10px; left: 10px; color: #fff; font-size: 24px; }
+    #lives { position: absolute; top: 50px; left: 10px; color: #fff; font-size: 24px; }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+  <div id="score">Score: 0</div>
+  <div id="lives">Lives: 3</div>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-  function updateGame() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+    const lanes = 3;
+    const laneWidth = canvas.width / lanes;
+    let dino = { x: laneWidth, y: canvas.height / 2, width: 50, height: 50 };
+    const dinoImage = new Image();
+    dinoImage.src = 'https://thumbs.dreamstime.com/z/cute-dinosaur-cartoon-illustration-33230511.jpg';
 
-    if (keys['ArrowUp'] || keys['w']) {
-      dino.y = Math.max(0, dino.y - 10);
+    const barrels = [];
+    let score = 0;
+    let lives = 3;
+    let gameSpeed = 3;
+    let lastObstacleTime = 0;
+
+    function drawDino() {
+      ctx.drawImage(dinoImage, dino.x, dino.y, dino.width, dino.height);
     }
-    if (keys['ArrowDown'] || keys['s']) {
-      dino.y = Math.min(canvas.height - dino.height, dino.y + 10);
-    }
-    
-    ctx.fillStyle = 'green';
-    ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
-    
 
-    for (let i = obstacles.length - 1; i >= 0; i--) {
-      let obs = obstacles[i];
-      obs.x -= 5;
-      ctx.fillStyle = 'red';
-      ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+    function drawBarrels() {
+      barrels.forEach(barrel => {
+        ctx.drawImage(barrel.image, barrel.x, barrel.y, barrel.width, barrel.height);
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawDino();
+      drawBarrels();
+      ctx.fillStyle = 'white';
+      ctx.font = '24px Arial';
+      ctx.fillText(`Score: ${score}`, 10, 30);
+      ctx.fillText(`Lives: ${lives}`, 10, 60);
+    }
+
+    function update() {
+      score++;
+      barrels.forEach(barrel => {
+        barrel.x -= gameSpeed;
+      });
+      if (barrels.length > 0 && barrels[0].x < -barrels[0].width) {
+        barrels.shift();
+      }
+
+      if (Date.now() - lastObstacleTime > 2000) {
+        createBarrel();
+        lastObstacleTime = Date.now();
+      }
       
-      if (obs.x < dino.x + dino.width &&
-          obs.x + obs.width > dino.x &&
-          obs.y < dino.y + dino.height &&
-          obs.y + obs.height > dino.y) {
-        if (lives > 1) {
+      if (lives <= 0) {
+        alert('Game Over');
+        document.location.reload();
+      }
+    }
+
+    function createBarrel() {
+      const barrelImage = new Image();
+      barrelImage.src = 'https://caterrent.com/store/wp-content/uploads/2018/12/BARR01-1.jpg';
+      barrels.push({
+        x: canvas.width,
+        y: Math.random() * (canvas.height - 50),
+        width: 50,
+        height: 50,
+        image: barrelImage
+      });
+    }
+
+    function checkCollision() {
+      barrels.forEach(barrel => {
+        if (dino.x < barrel.x + barrel.width &&
+            dino.x + dino.width > barrel.x &&
+            dino.y < barrel.y + barrel.height &&
+            dino.y + dino.height > barrel.y) {
           lives--;
-          obstacles.splice(i, 1);
-        } else {
-          clearInterval(gameInterval);
-          clearInterval(obstacleInterval);
-          alert('Game Over! Final Score: ' + score);
-          return;
+          barrels.splice(barrels.indexOf(barrel), 1);
+          if (lives > 0) {
+            dino.x = laneWidth;
+            dino.y = canvas.height / 2;
+          }
         }
-      }
-      
-      if (obs.x + obs.width < 0) {
-        obstacles.splice(i, 1);
+      });
+    }
+
+    function handleInput(e) {
+      switch (e.key) {
+        case 'ArrowUp':
+        case 'w':
+          dino.y = Math.max(dino.y - 60, 0);
+          break;
+        case 'ArrowDown':
+        case 's':
+          dino.y = Math.min(dino.y + 60, canvas.height - dino.height);
+          break;
       }
     }
-    
-    score++;
-    ctx.fillStyle = 'black';
-    ctx.fillText('Score: ' + score, 10, 20);
-    ctx.fillText('Lives: ' + lives, 10, 40);
-  }
 
-  function createObstacle() {
-    let height = Math.random() * (canvas.height / 2);
-    obstacles.push({
-      x: canvas.width,
-      y: height,
-      width: 40,
-      height: 40
-    });
-  }
+    document.addEventListener('keydown', handleInput);
 
-  setup();
-</script>
+    function gameLoop() {
+      update();
+      checkCollision();
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+  </script>
+</body>
+</html>
