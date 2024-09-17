@@ -87,3 +87,22 @@ function resetGame() {
 
 createBoard();
 </script>
+
+Hangman game - guess the word!
+```javascript
+let word = "javascript";
+let guesses = [];
+let remaining = 5;
+
+function guessLetter(letter) {
+  if (word.includes(letter)) {
+    console.log(`Correct guess: ${letter}`);
+  } else {
+    remaining--;
+    console.log(`Incorrect guess. Remaining lives: ${remaining}`);
+  }
+  guesses.push(letter);
+  if (remaining === 0) {
+    console.log("Game Over!");
+  }
+}
