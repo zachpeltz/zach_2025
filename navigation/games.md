@@ -88,117 +88,61 @@ function resetGame() {
 createBoard();
 </script>
 
-Subway Surfers Game - avoid the obstacles!
-<table id="gameBoard"></table>
-<p id="gameStatus">Press Start to Begin!</p>
-<p id="scoreBoard">Best Score: 0 | Time: 0s</p>
-<button onclick="startGame()">Start Game</button>
-<button onclick="resetGame()">Reset Game</button>
+
+<div id="game">
+  <p>Guess a number between 1 and 1000!</p>
+  <input type="number" id="guess" placeholder="Enter your guess here">
+  <button onclick="checkGuess()">Submit Guess</button>
+  <p id="result"></p>
+</div>
 
 <script>
-let playerLane = 1; // Start player in the middle lane
-let score = 0, bestScore = 0, time = 0, gameActive = false, intervalId;
-const totalLanes = 3, obstacleSpeed = 1000;
-let obstacleLane = -1;
+  const randomNumber = Math.floor(Math.random() * 1000) + 1;
+  let attempts = 0;
 
-// Initialize game board
-function createBoard() {
-  let boardHTML = '';
-  for (let i = 0; i < totalLanes; i++) {
-    boardHTML += `<tr><td id="lane${i}" style="width: 100px; height: 100px; text-align: center; border: 1px solid black;"></td></tr>`;
-  }
-  document.getElementById("gameBoard").innerHTML = boardHTML;
-}
-
-// Start the game
-function startGame() {
-  if (gameActive) return;
-  gameActive = true;
-  score = 0;
-  time = 0;
-  playerLane = 1; // Player starts in the middle lane
-  document.getElementById("gameStatus").textContent = "Game Started!";
-  document.getElementById("lane1").textContent = 'P'; // Show player
-
-  intervalId = setInterval(gameLoop, obstacleSpeed); // Start obstacle loop
-  startTimer(); // Start timer
-}
-
-// Game loop for obstacles
-function gameLoop() {
-  if (!gameActive) return;
-  generateObstacle();
-  checkCollision();
-}
-
-// Generate a random obstacle
-function generateObstacle() {
-  obstacleLane = Math.floor(Math.random() * totalLanes);
-  document.getElementById(`lane${obstacleLane}`).textContent = 'X'; // Show obstacle
-
-  setTimeout(() => {
-    document.getElementById(`lane${obstacleLane}`).textContent = ''; // Clear obstacle after 1 second
-    score++;
-    document.getElementById("scoreBoard").textContent = `Best Score: ${bestScore} | Time: ${time}s`;
-  }, obstacleSpeed);
-}
-
-// Move player up or down
-document.onkeydown = function(e) {
-  if (!gameActive) return;
-  if (e.key === 'ArrowUp' && playerLane > 0) {
-    movePlayerTo(playerLane - 1);
-  } else if (e.key === 'ArrowDown' && playerLane < totalLanes - 1) {
-    movePlayerTo(playerLane + 1);
-  }
-};
-
-// Move player to a new lane
-function movePlayerTo(newLane) {
-  document.getElementById(`lane${playerLane}`).textContent = ''; // Clear previous position
-  playerLane = newLane;
-  document.getElementById(`lane${playerLane}`).textContent = 'P'; // Show player in the new lane
-}
-
-// Check if player collides with an obstacle
-function checkCollision() {
-  if (obstacleLane === playerLane) {
-    gameOver();
-  }
-}
-
-// End the game
-function gameOver() {
-  clearInterval(intervalId);
-  gameActive = false;
-  document.getElementById("gameStatus").textContent = "Game Over!";
-  if (score > bestScore) bestScore = score;
-  document.getElementById("scoreBoard").textContent = `Best Score: ${bestScore} | Time: ${time}s`;
-}
-
-// Timer function
-function startTimer() {
-  const timerInterval = setInterval(() => {
-    if (!gameActive) {
-      clearInterval(timerInterval);
+  function checkGuess() {
+    const userGuess = parseInt(document.getElementById('guess').value);
+    const result = document.getElementById('result');
+    attempts++;
+    
+    if (userGuess === randomNumber) {
+      result.textContent = `Congratulations! You guessed the number ${randomNumber} correctly in ${attempts} attempts.`;
+    } else if (userGuess > randomNumber) {
+      result.textContent = "Too high! Try again.";
     } else {
-      time++;
-      document.getElementById("scoreBoard").textContent = `Best Score: ${bestScore} | Time: ${time}s`;
+      result.textContent = "Too low! Try again.";
     }
-  }, 1000);
-}
-
-// Reset the game but keep best score
-function resetGame() {
-  clearInterval(intervalId);
-  gameActive = false;
-  score = 0;
-  time = 0;
-  document.getElementById("gameStatus").textContent = "Press Start to Begin!";
-  document.getElementById("scoreBoard").textContent = `Best Score: ${bestScore} | Time: ${time}s`;
-  createBoard(); // Reset the board
-}
-
-// Initialize the game board
-createBoard();
+  }
 </script>
+
+
+<button onclick="playGame('Rock')">Rock</button>
+<button onclick="playGame('Paper')">Paper</button>
+<button onclick="playGame('Scissors')">Scissors</button>
+
+<p id="result"></p>
+
+<script>
+  function playGame(playerChoice) {
+    const choices = ['Rock', 'Paper', 'Scissors'];
+    let computerChoice = choices[Math.floor(Math.random() * 3)];
+    let result = '';
+
+    if (playerChoice === computerChoice) {
+      result = 'It\'s a tie!';
+    } else if (
+      (playerChoice === 'Rock' && computerChoice === 'Scissors') ||
+      (playerChoice === 'Paper' && computerChoice === 'Rock') ||
+      (playerChoice === 'Scissors' && computerChoice === 'Paper')
+    ) {
+      result = 'You win! ' + playerChoice + ' beats ' + computerChoice;
+    } else {
+      result = 'You lose! ' + computerChoice + ' beats ' + playerChoice;
+    }
+
+    document.getElementById('result').textContent = result;
+  }
+</script> 
+
+
+Choose Rock, Paper, or Scissors and see if you can beat the computer!
