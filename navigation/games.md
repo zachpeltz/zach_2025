@@ -118,47 +118,26 @@ function resetGame() {
 createBoard();
 </script>
 
+Maze game - navigate to the end!
 ```javascript
-let player1 = { left: 1, right: 1 };
-let player2 = { left: 1, right: 1 };
-let currentPlayer = 1;
+let maze = [
+  ["S", ".", ".", "#"],
+  ["#", ".", "#", "."],
+  [".", ".", ".", "E"],
+];
+let position = { x: 0, y: 0 };
 
-function updateStatus() {
-  console.log(`Player 1: Left - ${player1.left}, Right - ${player1.right}`);
-  console.log(`Player 2: Left - ${player2.left}, Right - ${player2.right}`);
-  if ((player1.left >= 5 && player1.right >= 5) || (player2.left >= 5 && player2.right >= 5)) {
-    console.log("Game Over! Last player with a hand wins.");
+function move(direction) {
+  if (direction === "up" && position.x > 0 && maze[position.x - 1][position.y] !== "#") position.x--;
+  if (direction === "down" && position.x < maze.length - 1 && maze[position.x + 1][position.y] !== "#") position.x++;
+  if (direction === "left" && position.y > 0 && maze[position.x][position.y - 1] !== "#") position.y--;
+  if (direction === "right" && position.y < maze[0].length - 1 && maze[position.x][position.y + 1] !== "#") position.y++;
+  console.log(`Moved ${direction}. Current position: (${position.x}, ${position.y})`);
+  if (maze[position.x][position.y] === "E") {
+    console.log("You reached the end!");
   }
 }
 
-function tap(player, hand) {
-  if (currentPlayer === 1) {
-    if (hand === 'left') player2.left += player1.left;
-    else player2.right += player1.right;
-    player2.left = player2.left >= 5 ? 0 : player2.left;
-    player2.right = player2.right >= 5 ? 0 : player2.right;
-    currentPlayer = 2;
-  } else {
-    if (hand === 'left') player1.left += player2.left;
-    else player1.right += player2.right;
-    player1.left = player1.left >= 5 ? 0 : player1.left;
-    player1.right = player1.right >= 5 ? 0 : player1.right;
-    currentPlayer = 1;
-  }
-  updateStatus();
-}
-
-function combine(player, fromHand, toHand) {
-  if (currentPlayer === 1) {
-    let moveAmount = fromHand === 'left' ? player1.left : player1.right;
-    if (fromHand === 'left') { player1.left -= moveAmount; player1.right += moveAmount; }
-    else { player1.right -= moveAmount; player1.left += moveAmount; }
-    currentPlayer = 2;
-  } else {
-    let moveAmount = fromHand === 'left' ? player2.left : player2.right;
-    if (fromHand === 'left') { player2.left -= moveAmount; player2.right += moveAmount; }
-    else { player2.right -= moveAmount; player2.left += moveAmount; }
-    currentPlayer = 1;
-  }
-  updateStatus();
-}
+// Example moves
+move("right");
+move("down");
