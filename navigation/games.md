@@ -88,75 +88,135 @@ function resetGame() {
 createBoard();
 </script>
 
-Poker 2 player game - best hand wins!
-<table id="player1Cards"></table>
-<table id="player2Cards"></table>
-<table id="communityCards"></table>
-<p id="gameStatus">Press "Deal Cards" to start the game!</p>
-<button onclick="dealCards()">Deal Cards</button>
+Subway Surfers Game - try to dodge the obstacles and score points!
+<table id="gameBoard"></table>
+<p id="gameStatus">Press Start to Begin!</p>
+<p id="scoreBoard">Best Score: 0 | Best Time: 0s</p>
+<p id="currentScore">Score: 0 | Time: 0s</p>
+<button onclick="startGame()">Start Game</button>
 <button onclick="resetGame()">Reset Game</button>
 
 <script>
-let deck, player1Hand, player2Hand, communityCards;
+let playerLane, obstacleLane, score, time, gameActive, bestScore = 0, bestTime = 0, intervalId;
+const lanes = 3; // Number of lanes (3)
+const speedIncreaseInterval = 5000; // Time after which speed increases
+let obstacleSpeed = 1000; // Initial obstacle speed (ms)
 
-// Initialize deck and shuffle it
-function createDeck() {
-  const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
-  const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-  deck = [];
-  
-  for (let suit of suits) {
-    for (let rank of ranks) {
-      deck.push(`${rank} of ${suit}`);
+// Create the initial game board
+function createBoard() {
+  let boardHTML = '';
+  for (let i = 0; i < lanes; i++) {
+    boardHTML += '<tr>';
+    for (let j = 0; j < 1; j++) {
+      boardHTML += `<td id="lane${i}" style="width: 100px; height: 100px; text-align: center; font-size: 24px;"></td>`;
     }
+    boardHTML += '</tr>';
   }
-  
-  // Shuffle the deck
-  deck.sort(() => Math.random() - 0.5);
+  document.getElementById("gameBoard").innerHTML = boardHTML;
+  document.getElementById(`lane${playerLane}`).textContent = 'P'; // Show player in the starting lane
 }
 
-function dealCards() {
-  createDeck();
-  player1Hand = [deck.pop(), deck.pop()];
-  player2Hand = [deck.pop(), deck.pop()];
-  communityCards = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
+// Initialize game variables and start the game
+function startGame() {
+  playerLane = 1; // Start in the middle lane (1 out of 0, 1, 2)
+  score = 0;
+  time = 0;
+  gameActive = true;
+  obstacleSpeed = 1000;
 
-  renderCards();
-  document.getElementById('gameStatus').textContent = "Cards dealt! Check the hands.";
+  createBoard();
+  document.getElementById("gameStatus").textContent = "Game Started!";
+  intervalId = setInterval(gameLoop, obstacleSpeed);
+  startTimer();
 }
 
-function renderCards() {
-  // Render player 1's hand
-  let player1HTML = '<tr><td>Player 1 Cards</td>';
-  for (let card of player1Hand) {
-    player1HTML += `<td>${card}</td>`;
-  }
-  player1HTML += '</tr>';
-  document.getElementById("player1Cards").innerHTML = player1HTML;
-
-  // Render player 2's hand
-  let player2HTML = '<tr><td>Player 2 Cards</td>';
-  for (let card of player2Hand) {
-    player2HTML += `<td>${card}</td>`;
-  }
-  player2HTML += '</tr>';
-  document.getElementById("player2Cards").innerHTML = player2HTML;
-
-  // Render community cards
-  let communityHTML = '<tr><td>Community Cards</td>';
-  for (let card of communityCards) {
-    communityHTML += `<td>${card}</td>`;
-  }
-  communityHTML += '</tr>';
-  document.getElementById("communityCards").innerHTML = communityHTML;
+// Main game loop, responsible for moving obstacles
+function gameLoop() {
+  movePlayer();
+  generateObstacle();
+  increaseDifficulty();
+  updateScore();
 }
 
+// Move player based on up/down arrow keys
+document.onkeydown = function(e) {
+  if (!gameActive) return;
+
+  if (e.key === 'ArrowUp' && playerLane > 0) {
+    movePlayerTo(playerLane - 1);
+  } else if (e.key === 'ArrowDown' && playerLane < lanes - 1) {
+    movePlayerTo(playerLane + 1);
+  }
+};
+
+// Move the player to a new lane
+function movePlayerTo(newLane) {
+  document.getElementById(`lane${playerLane}`).textContent = ''; // Clear old position
+  playerLane = newLane;
+  document.getElementById(`lane${playerLane}`).textContent = 'P'; // Show new position
+}
+
+// Generate obstacles randomly in one of the lanes
+function generateObstacle() {
+  obstacleLane = Math.floor(Math.random() * lanes);
+  document.getElementById(`lane${obstacleLane}`).textContent = 'X'; // Show obstacle
+
+  setTimeout(() => {
+    if (obstacleLane === playerLane) {
+      gameOver();
+    } else {
+      document.getElementById(`lane${obstacleLane}`).textContent = ''; // Clear obstacle
+    }
+  }, obstacleSpeed - 200); // Delay to simulate movement toward player
+}
+
+// Increase game difficulty (faster obstacles)
+function increaseDifficulty() {
+  if (time % speedIncreaseInterval === 0 && obstacleSpeed > 200) {
+    obstacleSpeed -= 100; // Obstacles come faster
+    clearInterval(intervalId);
+    intervalId = setInterval(gameLoop, obstacleSpeed);
+  }
+}
+
+// Timer for how long the player has lasted
+function startTimer() {
+  setInterval(() => {
+    if (gameActive) {
+      time++;
+      document.getElementById("currentScore").textContent = `Score: ${score} | Time: ${time}s`;
+    }
+  }, 1000);
+}
+
+// Update score based on survival time
+function updateScore() {
+  score += 10; // Increment score
+  document.getElementById("currentScore").textContent = `Score: ${score} | Time: ${time}s`;
+}
+
+// End the game when hit by an obstacle
+function gameOver() {
+  clearInterval(intervalId);
+  gameActive = false;
+  document.getElementById("gameStatus").textContent = "Game Over!";
+
+  // Update best score and time
+  if (score > bestScore) {
+    bestScore = score;
+  }
+  if (time > bestTime) {
+    bestTime = time;
+  }
+  document.getElementById("scoreBoard").textContent = `Best Score: ${bestScore} | Best Time: ${bestTime}s`;
+}
+
+// Reset the game but keep best scores
 function resetGame() {
-  document.getElementById("gameStatus").textContent = "Press 'Deal Cards' to start the game!";
-  document.getElementById("player1Cards").innerHTML = "";
-  document.getElementById("player2Cards").innerHTML = "";
-  document.getElementById("communityCards").innerHTML = "";
+  clearInterval(intervalId);
+  gameActive = false;
+  document.getElementById("currentScore").textContent = "Score: 0 | Time: 0s";
+  document.getElementById("gameStatus").textContent = "Press Start to Begin!";
+  createBoard();
 }
-
-dealCards();
 </script>
