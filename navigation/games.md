@@ -148,113 +148,161 @@ Choose Rock, Paper, or Scissors and see if you can beat the computer!
 
 Dodge Game - don't hit the moving obstacles!
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    // Canvas setup
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = 800;
-    canvas.height = 400;
     document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    let player = { x: 50, y: 300, width: 50, height: 50, dy: 0, grounded: true, ducking: false };
+    // Player variables
+    let player = {
+        x: 50,
+        y: canvas.height - 150,
+        width: 50,
+        height: 50,
+        color: 'blue',
+        dy: 0,
+        gravity: 1.5,
+        jumpPower: -20,
+        isJumping: false,
+        isDucking: false
+    };
+
+    // Obstacles
     let obstacles = [];
+    let obstacleSpeed = 6;
+    let frame = 0;
+
+    // Game variables
     let score = 0;
     let gameOver = false;
-    let speed = 5;
+
+    // Control functions
+    window.addEventListener('keydown', function (e) {
+        if (e.code === 'ArrowUp' || e.code === 'KeyW') {
+            if (!player.isJumping) {
+                player.dy = player.jumpPower;
+                player.isJumping = true;
+            }
+        }
+        if (e.code === 'ArrowDown' || e.code === 'KeyS') {
+            player.isDucking = true;
+            player.height = 25;
+        }
+    });
+
+    window.addEventListener('keyup', function (e) {
+        if (e.code === 'ArrowDown' || e.code === 'KeyS') {
+            player.isDucking = false;
+            player.height = 50;
+        }
+    });
+
+    // Game logic
+    function updatePlayer() {
+        player.dy += player.gravity;
+        player.y += player.dy;
+
+        if (player.y > canvas.height - 150) {
+            player.y = canvas.height - 150;
+            player.dy = 0;
+            player.isJumping = false;
+        }
+    }
+
+    function spawnObstacles() {
+        if (frame % 120 === 0) {
+            let size = Math.random() * (60 - 30) + 30;
+            let obstacle = {
+                x: canvas.width,
+                y: canvas.height - size - 100,
+                width: size,
+                height: size,
+                color: 'red'
+            };
+            obstacles.push(obstacle);
+        }
+    }
+
+    function updateObstacles() {
+        for (let i = 0; i < obstacles.length; i++) {
+            obstacles[i].x -= obstacleSpeed;
+            if (obstacles[i].x + obstacles[i].width < 0) {
+                obstacles.splice(i, 1);
+                score++;
+            }
+            // Check for collision
+            if (
+                player.x < obstacles[i].x + obstacles[i].width &&
+                player.x + player.width > obstacles[i].x &&
+                player.y < obstacles[i].y + obstacles[i].height &&
+                player.y + player.height > obstacles[i].y
+            ) {
+                gameOver = true;
+            }
+        }
+    }
 
     function drawPlayer() {
-        ctx.fillStyle = 'blue';
+        ctx.fillStyle = player.color;
         ctx.fillRect(player.x, player.y, player.width, player.height);
     }
 
     function drawObstacles() {
-        ctx.fillStyle = 'red';
-        obstacles.forEach(obstacle => {
-            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-        });
-    }
-
-    function addObstacle() {
-        let height = Math.random() > 0.5 ? 50 : 100;
-        obstacles.push({ x: canvas.width, y: canvas.height - height, width: 50, height: height });
-    }
-
-    function updateObstacles() {
-        obstacles.forEach(obstacle => obstacle.x -= speed);
-        if (obstacles.length > 0 && obstacles[0].x + obstacles[0].width < 0) {
-            obstacles.shift();
+        for (let i = 0; i < obstacles.length; i++) {
+            ctx.fillStyle = obstacles[i].color;
+            ctx.fillRect(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height);
         }
     }
 
-    function checkCollision() {
-        obstacles.forEach(obstacle => {
-            if (player.x < obstacle.x + obstacle.width && player.x + player.width > obstacle.x &&
-                player.y < obstacle.y + obstacle.height && player.y + player.height > obstacle.y) {
-                gameOver = true;
-            }
-        });
+    function drawScore() {
+        ctx.font = '30px Arial';
+        ctx.fillStyle = 'black';
+        ctx.fillText('Score: ' + score, 20, 50);
     }
 
-    function updatePlayer() {
-        if (!player.grounded) {
-            player.dy += 0.8;
-            player.y += player.dy;
-            if (player.y + player.height >= canvas.height) {
-                player.y = canvas.height - player.height;
-                player.dy = 0;
-                player.grounded = true;
-            }
-        }
-
-        if (player.ducking) {
-            player.height = 25;
-        } else {
-            player.height = 50;
-        }
+    function resetGame() {
+        player.y = canvas.height - 150;
+        player.dy = 0;
+        player.isJumping = false;
+        player.isDucking = false;
+        obstacles = [];
+        score = 0;
+        gameOver = false;
+        frame = 0;
     }
 
     function gameLoop() {
-        if (!gameOver) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawPlayer();
-            drawObstacles();
-            updateObstacles();
-            updatePlayer();
-            checkCollision();
-            score++;
-            speed += 0.001;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            if (Math.random() < 0.01) {
-                addObstacle();
-            }
-
-            ctx.font = '20px Arial';
-            ctx.fillText('Score: ' + Math.floor(score / 10), 10, 20);
-
-            requestAnimationFrame(gameLoop);
-        } else {
-            ctx.font = '50px Arial';
-            ctx.fillText('Game Over', canvas.width / 2 - 150, canvas.height / 2);
+        if (gameOver) {
+            ctx.font = '60px Arial';
+            ctx.fillStyle = 'black';
+            ctx.fillText('Game Over!', canvas.width / 2 - 150, canvas.height / 2);
+            ctx.font = '30px Arial';
+            ctx.fillText('Press R to Restart', canvas.width / 2 - 120, canvas.height / 2 + 50);
+            return;
         }
+
+        updatePlayer();
+        spawnObstacles();
+        updateObstacles();
+
+        drawPlayer();
+        drawObstacles();
+        drawScore();
+
+        frame++;
+        requestAnimationFrame(gameLoop);
     }
 
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'ArrowUp' || event.key === 'w') {
-            if (player.grounded) {
-                player.dy = -15;
-                player.grounded = false;
-            }
-        }
-        if (event.key === 'ArrowDown' || event.key === 's') {
-            player.ducking = true;
-        }
-    });
-
-    document.addEventListener('keyup', function(event) {
-        if (event.key === 'ArrowDown' || event.key === 's') {
-            player.ducking = false;
+    window.addEventListener('keydown', function (e) {
+        if (gameOver && e.code === 'KeyR') {
+            resetGame();
+            gameLoop();
         }
     });
 
     gameLoop();
-});
 </script>
