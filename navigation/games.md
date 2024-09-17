@@ -146,118 +146,127 @@ createBoard();
 
 Choose Rock, Paper, or Scissors and see if you can beat the computer!
 
-Dodge Game - don't hit the moving obstacles and score points as you go!
+Dodge Game - don't hit the moving obstacles and score points as you go! -Try to get a high score!
 
-```javascript
-let canvas, ctx;
-let dinosaur, obstacles, lanes;
-let score, lives;
-let gameInterval;
-let keys = {};
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const resetBtn = document.getElementById('resetBtn');
+    const newGameBtn = document.getElementById('newGameBtn');
+    const laneCount = 3;
+    const laneHeight = canvas.height / laneCount;
+    const dinoWidth = 50, dinoHeight = 50;
+    const dinoImage = new Image();
+    dinoImage.src = 'https://thumbs.dreamstime.com/z/cute-dinosaur-cartoon-illustration-33230511.jpg'; 
+    const barrelImage = new Image();
+    barrelImage.src = 'https://caterrent.com/store/wp-content/uploads/2018/12/BARR01-1.jpg'; 
 
-const dinoImage = new Image();
-dinoImage.src = 'https://thumbs.dreamstime.com/z/cute-dinosaur-cartoon-illustration-33230511.jpg';
+    let dinoX = 50;
+    let dinoY = Math.floor(laneCount / 2) * laneHeight;
+    let obstacles = [];
+    let score = 0;
+    let lives = 3;
+    let gameInterval;
+    let obstacleInterval;
 
-const barrelImage = new Image();
-barrelImage.src = 'https://caterrent.com/store/wp-content/uploads/2018/12/BARR01-1.jpg';
-
-function setup() {
-    canvas = document.createElement('canvas');
-    canvas.width = 800;
-    canvas.height = 600;
-    document.body.appendChild(canvas);
-    ctx = canvas.getContext('2d');
-
-    dinosaur = { x: 50, y: canvas.height / 2, width: 50, height: 50 };
-    obstacles = [];
-    lanes = [canvas.height / 3, canvas.height / 2, canvas.height * 2 / 3];
-    score = 0;
-    lives = 3;
-
-    document.addEventListener('keydown', (e) => keys[e.key] = true);
-    document.addEventListener('keyup', (e) => keys[e.key] = false);
-
-    gameInterval = setInterval(update, 20);
-
-  
-    const resetButton = document.createElement('button');
-    resetButton.textContent = 'Reset Game';
-    resetButton.addEventListener('click', resetGame);
-    document.body.appendChild(resetButton);
-}
-
-function update() {
-    moveDinosaur();
-    moveObstacles();
-    detectCollisions();
-    draw();
-}
-
-function moveDinosaur() {
-    if (keys['w'] || keys['ArrowUp']) {
-        dinosaur.y = Math.max(lanes[0], dinosaur.y - 10);
-    } else if (keys['s'] || keys['ArrowDown']) {
-        dinosaur.y = Math.min(lanes[2], dinosaur.y + 10);
+    function resetGame() {
+        dinoX = 50;
+        dinoY = Math.floor(laneCount / 2) * laneHeight;
+        obstacles = [];
+        score = 0;
+        lives = 3;
+        startGame();
     }
-}
 
-function moveObstacles() {
-    if (Math.random() < 0.02) {
-        const lane = lanes[Math.floor(Math.random() * lanes.length)];
-        obstacles.push({ x: canvas.width, y: lane, width: 50, height: 50 });
+    function startGame() {
+        if (gameInterval) clearInterval(gameInterval);
+        if (obstacleInterval) clearInterval(obstacleInterval);
+
+        gameInterval = setInterval(updateGame, 1000 / 60); 
+        obstacleInterval = setInterval(createObstacle, 2000); 
     }
-    obstacles.forEach(obstacle => {
-        obstacle.x -= 5;
-    });
-    obstacles = obstacles.filter(obstacle => obstacle.x + obstacle.width > 0);
-}
 
-function detectCollisions() {
-    obstacles.forEach(obstacle => {
-        if (dinosaur.x < obstacle.x + obstacle.width &&
-            dinosaur.x + dinosaur.width > obstacle.x &&
-            dinosaur.y < obstacle.y + obstacle.height &&
-            dinosaur.y + dinosaur.height > obstacle.y) {
-            lives--;
-            if (lives <= 0) {
-                endGame();
-            } else {
-                obstacles = obstacles.filter(o => o !== obstacle);
+    function updateGame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawDino();
+        moveObstacles();
+        detectCollisions();
+        drawObstacles();
+        updateScore();
+    }
+
+    function drawDino() {
+        ctx.drawImage(dinoImage, dinoX, dinoY, dinoWidth, dinoHeight);
+    }
+
+    function moveObstacles() {
+        obstacles.forEach(obstacle => {
+            obstacle.x -= 5; 
+        });
+
+        obstacles = obstacles.filter(obstacle => obstacle.x + obstacle.width > 0);
+    }
+
+    function drawObstacles() {
+        obstacles.forEach(obstacle => {
+            ctx.drawImage(barrelImage, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        });
+    }
+
+    function detectCollisions() {
+        obstacles.forEach(obstacle => {
+            if (dinoX < obstacle.x + obstacle.width &&
+                dinoX + dinoWidth > obstacle.x &&
+                dinoY < obstacle.y + obstacle.height &&
+                dinoY + dinoHeight > obstacle.y) {
+                if (lives > 1) {
+                    lives--;
+                } else {
+                    gameOver();
+                }
+                obstacles = obstacles.filter(obs => obs !== obstacle);
             }
+        });
+    }
+
+    function createObstacle() {
+        const lane = Math.floor(Math.random() * laneCount);
+        const width = 60, height = 60;
+        obstacles.push({
+            x: canvas.width,
+            y: lane * laneHeight,
+            width: width,
+            height: height
+        });
+    }
+
+    function updateScore() {
+        score += 1 / 60; 
+        ctx.font = '20px Arial';
+        ctx.fillStyle = 'black';
+        ctx.fillText('Score: ' + Math.floor(score), 10, 20);
+        ctx.fillText('Lives: ' + lives, canvas.width - 100, 20);
+    }
+
+    function gameOver() {
+        clearInterval(gameInterval);
+        clearInterval(obstacleInterval);
+        alert('Game Over! Your score was ' + Math.floor(score));
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowUp' || e.key === 'w') {
+            dinoY = Math.max(0, dinoY - laneHeight);
+        }
+        if (e.key === 'ArrowDown' || e.key === 's') {
+            dinoY = Math.min(canvas.height - dinoHeight, dinoY + laneHeight);
         }
     });
-}
 
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    resetBtn.addEventListener('click', resetGame);
+    newGameBtn.addEventListener('click', resetGame);
 
-   
-    ctx.drawImage(dinoImage, dinosaur.x, dinosaur.y, dinosaur.width, dinosaur.height);
-
-   
-    obstacles.forEach(obstacle => {
-        ctx.drawImage(barrelImage, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-    });
-
-   
-    ctx.fillStyle = 'black';
-    ctx.font = '20px Arial';
-    ctx.fillText(`Score: ${Math.floor(score)}`, 10, 20);
-    ctx.fillText(`Lives: ${lives}`, 10, 40);
-
-    score += 0.05; 
-}
-
-function endGame() {
-    clearInterval(gameInterval);
-    alert('Game Over! Your score was ' + Math.floor(score));
-}
-
-function resetGame() {
-    clearInterval(gameInterval);
-    document.body.removeChild(canvas);
-    document.body.removeChild(document.querySelector('button'));
-    setup();
-}
-
-setup();
+    startGame();
+});
+</script>
