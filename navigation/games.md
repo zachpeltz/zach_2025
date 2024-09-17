@@ -88,62 +88,75 @@ function resetGame() {
 createBoard();
 </script>
 
-Poker game 
-```javascript
-// Setup the deck, shuffle, and deal cards
-let suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
-let ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
-let deck = [];
+Poker 2 player game - best hand wins!
+<table id="player1Cards"></table>
+<table id="player2Cards"></table>
+<table id="communityCards"></table>
+<p id="gameStatus">Press "Deal Cards" to start the game!</p>
+<button onclick="dealCards()">Deal Cards</button>
+<button onclick="resetGame()">Reset Game</button>
 
-// Initialize deck
-for (let suit of suits) {
-  for (let rank of ranks) {
-    deck.push(`${rank} of ${suit}`);
+<script>
+let deck, player1Hand, player2Hand, communityCards;
+
+// Initialize deck and shuffle it
+function createDeck() {
+  const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
+  const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+  deck = [];
+  
+  for (let suit of suits) {
+    for (let rank of ranks) {
+      deck.push(`${rank} of ${suit}`);
+    }
   }
+  
+  // Shuffle the deck
+  deck.sort(() => Math.random() - 0.5);
 }
 
-// Shuffle the deck
-function shuffleDeck(deck) {
-  for (let i = deck.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
-    [deck[i], deck[j]] = [deck[j], deck[i]];
+function dealCards() {
+  createDeck();
+  player1Hand = [deck.pop(), deck.pop()];
+  player2Hand = [deck.pop(), deck.pop()];
+  communityCards = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
+
+  renderCards();
+  document.getElementById('gameStatus').textContent = "Cards dealt! Check the hands.";
+}
+
+function renderCards() {
+  // Render player 1's hand
+  let player1HTML = '<tr><td>Player 1 Cards</td>';
+  for (let card of player1Hand) {
+    player1HTML += `<td>${card}</td>`;
   }
-}
+  player1HTML += '</tr>';
+  document.getElementById("player1Cards").innerHTML = player1HTML;
 
-shuffleDeck(deck);
-
-// Deal cards to players and the community
-let player1Hand = [deck.pop(), deck.pop()];
-let player2Hand = [deck.pop(), deck.pop()];
-let communityCards = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
-
-// Display hands and community cards
-console.log("Player 1 Hand:", player1Hand);
-console.log("Player 2 Hand:", player2Hand);
-console.log("Community Cards:", communityCards);
-
-// Basic function to rank hands (simplified)
-function rankHand(playerHand, communityCards) {
-  let allCards = playerHand.concat(communityCards);
-  // In a real game, this would involve a complex ranking algorithm
-  // For simplicity, we just count high cards here
-  let highCard = Math.max(...allCards.map(card => ranks.indexOf(card.split(" ")[0])));
-  return highCard;
-}
-
-// Compare hands to determine winner
-function determineWinner() {
-  let player1Score = rankHand(player1Hand, communityCards);
-  let player2Score = rankHand(player2Hand, communityCards);
-
-  if (player1Score > player2Score) {
-    console.log("Player 1 wins with a higher hand!");
-  } else if (player2Score > player1Score) {
-    console.log("Player 2 wins with a higher hand!");
-  } else {
-    console.log("It's a tie!");
+  // Render player 2's hand
+  let player2HTML = '<tr><td>Player 2 Cards</td>';
+  for (let card of player2Hand) {
+    player2HTML += `<td>${card}</td>`;
   }
+  player2HTML += '</tr>';
+  document.getElementById("player2Cards").innerHTML = player2HTML;
+
+  // Render community cards
+  let communityHTML = '<tr><td>Community Cards</td>';
+  for (let card of communityCards) {
+    communityHTML += `<td>${card}</td>`;
+  }
+  communityHTML += '</tr>';
+  document.getElementById("communityCards").innerHTML = communityHTML;
 }
 
-// Showdown
-determineWinner();
+function resetGame() {
+  document.getElementById("gameStatus").textContent = "Press 'Deal Cards' to start the game!";
+  document.getElementById("player1Cards").innerHTML = "";
+  document.getElementById("player2Cards").innerHTML = "";
+  document.getElementById("communityCards").innerHTML = "";
+}
+
+dealCards();
+</script>
