@@ -64,9 +64,6 @@ This is my website: some links above
   }
 </script>
 
-
-Choose Rock, Paper, or Scissors and see if you can beat the computer!
-
 <button onclick="playGame('Rock')">Rock</button>
 <button onclick="playGame('Paper')">Paper</button>
 <button onclick="playGame('Scissors')">Scissors</button>
@@ -94,3 +91,6 @@ Choose Rock, Paper, or Scissors and see if you can beat the computer!
     document.getElementById('result').textContent = result;
   }
 </script> 
+
+
+Choose Rock, Paper, or Scissors and see if you can beat the computer!
