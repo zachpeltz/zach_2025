@@ -88,36 +88,62 @@ function resetGame() {
 createBoard();
 </script>
 
-Memory game - try to remember the cards!
+Poker game 
 ```javascript
-let cards = ["A", "A", "B", "B", "C", "C", "D", "D"];
-cards = cards.sort(() => Math.random() - 0.5);
-let flipped = [];
-let matches = 0;
+// Setup the deck, shuffle, and deal cards
+let suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+let ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+let deck = [];
 
-function flipCard(index) {
-  if (flipped.length < 2 && flipped.indexOf(index) === -1) {
-    flipped.push(index);
-    console.log(`Card flipped: ${cards[index]}`);
-    if (flipped.length === 2) {
-      checkMatch();
-    }
+// Initialize deck
+for (let suit of suits) {
+  for (let rank of ranks) {
+    deck.push(`${rank} of ${suit}`);
   }
 }
 
-function checkMatch() {
-  if (cards[flipped[0]] === cards[flipped[1]]) {
-    console.log(`Match!`);
-    matches++;
-    if (matches === cards.length / 2) {
-      console.log("You won the game!");
-    }
+// Shuffle the deck
+function shuffleDeck(deck) {
+  for (let i = deck.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+}
+
+shuffleDeck(deck);
+
+// Deal cards to players and the community
+let player1Hand = [deck.pop(), deck.pop()];
+let player2Hand = [deck.pop(), deck.pop()];
+let communityCards = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
+
+// Display hands and community cards
+console.log("Player 1 Hand:", player1Hand);
+console.log("Player 2 Hand:", player2Hand);
+console.log("Community Cards:", communityCards);
+
+// Basic function to rank hands (simplified)
+function rankHand(playerHand, communityCards) {
+  let allCards = playerHand.concat(communityCards);
+  // In a real game, this would involve a complex ranking algorithm
+  // For simplicity, we just count high cards here
+  let highCard = Math.max(...allCards.map(card => ranks.indexOf(card.split(" ")[0])));
+  return highCard;
+}
+
+// Compare hands to determine winner
+function determineWinner() {
+  let player1Score = rankHand(player1Hand, communityCards);
+  let player2Score = rankHand(player2Hand, communityCards);
+
+  if (player1Score > player2Score) {
+    console.log("Player 1 wins with a higher hand!");
+  } else if (player2Score > player1Score) {
+    console.log("Player 2 wins with a higher hand!");
   } else {
-    console.log("Not a match.");
+    console.log("It's a tie!");
   }
-  flipped = [];
 }
 
-// Example play
-flipCard(0);
-flipCard(1);
+// Showdown
+determineWinner();
