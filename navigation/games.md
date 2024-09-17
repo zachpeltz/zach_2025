@@ -147,67 +147,49 @@ createBoard();
 Choose Rock, Paper, or Scissors and see if you can beat the computer!
 
 Dodge Game - don't hit the moving obstacles!
+
 <script>
-    // Canvas setup
     const canvas = document.createElement('canvas');
     document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Player variables
-    let player = {
+    let dino = {
         x: 50,
         y: canvas.height - 150,
         width: 50,
         height: 50,
-        color: 'blue',
+        color: 'green',
         dy: 0,
         gravity: 1.5,
         jumpPower: -20,
-        isJumping: false,
-        isDucking: false
+        isJumping: false
     };
 
-    // Obstacles
     let obstacles = [];
-    let obstacleSpeed = 6;
+    let obstacleSpeed = 8;
     let frame = 0;
 
-    // Game variables
     let score = 0;
     let gameOver = false;
 
-    // Control functions
     window.addEventListener('keydown', function (e) {
-        if (e.code === 'ArrowUp' || e.code === 'KeyW') {
-            if (!player.isJumping) {
-                player.dy = player.jumpPower;
-                player.isJumping = true;
-            }
-        }
-        if (e.code === 'ArrowDown' || e.code === 'KeyS') {
-            player.isDucking = true;
-            player.height = 25;
+        if ((e.code === 'ArrowUp' || e.code === 'Space') && !dino.isJumping) {
+            dino.dy = dino.jumpPower;
+            dino.isJumping = true;
         }
     });
 
-    window.addEventListener('keyup', function (e) {
-        if (e.code === 'ArrowDown' || e.code === 'KeyS') {
-            player.isDucking = false;
-            player.height = 50;
-        }
-    });
 
-    // Game logic
-    function updatePlayer() {
-        player.dy += player.gravity;
-        player.y += player.dy;
+    function updateDino() {
+        dino.dy += dino.gravity;
+        dino.y += dino.dy;
 
-        if (player.y > canvas.height - 150) {
-            player.y = canvas.height - 150;
-            player.dy = 0;
-            player.isJumping = false;
+        if (dino.y > canvas.height - 150) {
+            dino.y = canvas.height - 150;
+            dino.dy = 0;
+            dino.isJumping = false;
         }
     }
 
@@ -228,25 +210,26 @@ Dodge Game - don't hit the moving obstacles!
     function updateObstacles() {
         for (let i = 0; i < obstacles.length; i++) {
             obstacles[i].x -= obstacleSpeed;
+
             if (obstacles[i].x + obstacles[i].width < 0) {
                 obstacles.splice(i, 1);
                 score++;
             }
-            // Check for collision
+
             if (
-                player.x < obstacles[i].x + obstacles[i].width &&
-                player.x + player.width > obstacles[i].x &&
-                player.y < obstacles[i].y + obstacles[i].height &&
-                player.y + player.height > obstacles[i].y
+                dino.x < obstacles[i].x + obstacles[i].width &&
+                dino.x + dino.width > obstacles[i].x &&
+                dino.y < obstacles[i].y + obstacles[i].height &&
+                dino.y + dino.height > obstacles[i].y
             ) {
                 gameOver = true;
             }
         }
     }
 
-    function drawPlayer() {
-        ctx.fillStyle = player.color;
-        ctx.fillRect(player.x, player.y, player.width, player.height);
+    function drawDino() {
+        ctx.fillStyle = dino.color;
+        ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
     }
 
     function drawObstacles() {
@@ -263,10 +246,9 @@ Dodge Game - don't hit the moving obstacles!
     }
 
     function resetGame() {
-        player.y = canvas.height - 150;
-        player.dy = 0;
-        player.isJumping = false;
-        player.isDucking = false;
+        dino.y = canvas.height - 150;
+        dino.dy = 0;
+        dino.isJumping = false;
         obstacles = [];
         score = 0;
         gameOver = false;
@@ -285,11 +267,11 @@ Dodge Game - don't hit the moving obstacles!
             return;
         }
 
-        updatePlayer();
+        updateDino();
         spawnObstacles();
         updateObstacles();
 
-        drawPlayer();
+        drawDino();
         drawObstacles();
         drawScore();
 
