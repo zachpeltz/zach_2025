@@ -119,7 +119,6 @@ createBoard();
 </script>
 
 Maze game - navigate to the end!
-```javascript
 let maze = [
   ["S", ".", ".", "#"],
   ["#", ".", "#", "."],
