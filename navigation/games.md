@@ -148,8 +148,6 @@ Choose Rock, Paper, or Scissors and see if you can beat the computer!
 
 Dodge Game - don't hit the moving obstacles and score points as you go!
 
-
-
 ```javascript
 let canvas, ctx;
 let dinosaur, obstacles, lanes;
