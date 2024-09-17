@@ -146,123 +146,103 @@ createBoard();
 
 Choose Rock, Paper, or Scissors and see if you can beat the computer!
 
-Dodge Game - don't hit the moving obstacles!
+Dodge Game - don't hit the moving obstacles! 
 
 <script>
-let canvas, ctx;
-let dino, obstacles = [], score = 0, lives = 3;
-let isJumping = false, isDucking = false;
-let jumpHeight = 0, jumpSpeed = 12, jumpDuration = 20;
-let gameSpeed = 2, obstacleSpeed = 4;
-let obstacleTimer = 0, obstacleInterval = 100;
-let gameOver = false;
+  let canvas = document.createElement("canvas");
+  let ctx = canvas.getContext("2d");
+  document.body.appendChild(canvas);
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-document.addEventListener('DOMContentLoaded', () => {
-    canvas = document.createElement('canvas');
-    ctx = canvas.getContext('2d');
-    canvas.width = 800;
-    canvas.height = 300;
-    document.body.appendChild(canvas);
-    
-    dino = { x: 50, y: 250, width: 50, height: 50, color: 'green' };
-    
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-    
-    requestAnimationFrame(gameLoop);
-});
+  let dino = {
+    x: canvas.width / 4,
+    y: canvas.height / 2,
+    width: 50,
+    height: 50,
+    image: new Image(),
+    lives: 3,
+    score: 0
+  };
+  dino.image.src = 'dino.png'; 
 
-function handleKeyDown(e) {
-    if (e.key === 'w' || e.key === 'ArrowUp') isJumping = true;
-    if (e.key === 's' || e.key === 'ArrowDown') isDucking = true;
-}
+  let obstacles = [];
+  let lanes = [canvas.height / 3, canvas.height / 2, canvas.height * 2 / 3];
+  let currentLane = 1;
+  let speed = 2;
 
-function handleKeyUp(e) {
-    if (e.key === 'w' || e.key === 'ArrowUp') isJumping = false;
-    if (e.key === 's' || e.key === 'ArrowDown') isDucking = false;
-}
+  function drawDino() {
+    ctx.drawImage(dino.image, dino.x, lanes[currentLane], dino.width, dino.height);
+  }
 
-function gameLoop() {
-    if (gameOver) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'red';
-        ctx.font = '30px Arial';
-        ctx.fillText('Game Over! Score: ' + score, 250, 150);
-        return;
+  function drawObstacles() {
+    for (let i = 0; i < obstacles.length; i++) {
+      ctx.fillStyle = 'red';
+      ctx.fillRect(obstacles[i].x, obstacles[i].y, 50, 50);
     }
+  }
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    updateGame();
-    drawGame();
-    
-    requestAnimationFrame(gameLoop);
-}
+  function moveObstacles() {
+    for (let i = 0; i < obstacles.length; i++) {
+      obstacles[i].x -= speed;
+      if (obstacles[i].x + 50 < 0) {
+        obstacles.splice(i, 1);
+        i--;
+      }
+    }
+  }
 
-function updateGame() {
-    if (isJumping) {
-        if (jumpHeight < jumpDuration) {
-            dino.y -= jumpSpeed;
-            jumpHeight++;
-        } else if (jumpHeight < 2 * jumpDuration) {
-            dino.y += jumpSpeed;
-            jumpHeight++;
+  function detectCollision() {
+    for (let i = 0; i < obstacles.length; i++) {
+      if (
+        dino.x < obstacles[i].x + 50 &&
+        dino.x + dino.width > obstacles[i].x &&
+        lanes[currentLane] < obstacles[i].y + 50 &&
+        lanes[currentLane] + dino.height > obstacles[i].y
+      ) {
+        if (dino.lives > 1) {
+          dino.lives--;
+          obstacles.splice(i, 1);
+          return;
         } else {
-            isJumping = false;
-            jumpHeight = 0;
+          alert('Game Over!');
+          document.location.reload();
         }
+      }
     }
-    if (isDucking) {
-        dino.height = 30;
-        dino.y = 250;
-    } else {
-        dino.height = 50;
-        dino.y = 250;
-    }
-    obstacles.forEach(obstacle => {
-        obstacle.x -= obstacleSpeed;
-        if (obstacle.x < dino.x + dino.width &&
-            obstacle.x + obstacle.width > dino.x &&
-            (dino.y + dino.height > obstacle.y)) {
-            if (!isDucking) {
-                loseLife();
-            }
-            obstacle.x = -obstacle.width; 
-        }
-    });
-    
-    obstacles = obstacles.filter(obstacle => obstacle.x > -obstacle.width);
+  }
 
-    obstacleTimer++;
-    if (obstacleTimer > obstacleInterval) {
-        obstacles.push({ x: canvas.width, y: 250, width: 20, height: 20, color: 'red' });
-        obstacleTimer = 0;
-        obstacleInterval = Math.max(50, obstacleInterval - 1); 
-    }
-
-    score = Math.floor((Date.now() - startTime) / 1000) * 100;
-}
-
-function drawGame() {
-    ctx.fillStyle = dino.color;
-    ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
-
-    obstacles.forEach(obstacle => {
-        ctx.fillStyle = obstacle.color;
-        ctx.fillRect(obstacle.x, obstacle.y - obstacle.height, obstacle.width, obstacle.height);
-    });
-
+  function updateScore() {
+    dino.score++;
     ctx.fillStyle = 'black';
-    ctx.font = '20px Arial';
-    ctx.fillText('Score: ' + score, 10, 20);
-    ctx.fillText('Lives: ' + lives, 10, 40);
-}
+    ctx.font = '30px Arial';
+    ctx.fillText('Score: ' + dino.score, 10, 30);
+  }
 
-function loseLife() {
-    lives--;
-    if (lives <= 0) {
-        gameOver = true;
+  function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawDino();
+    drawObstacles();
+    moveObstacles();
+    detectCollision();
+    updateScore();
+    if (Math.random() < 0.02) {
+      obstacles.push({
+        x: canvas.width,
+        y: lanes[Math.floor(Math.random() * 3)]
+      });
     }
-}
+    requestAnimationFrame(gameLoop);
+  }
 
-let startTime = Date.now();
+  function handleKeyPress(e) {
+    if (e.key === 'ArrowUp' || e.key === 'w') {
+      currentLane = Math.max(0, currentLane - 1);
+    } else if (e.key === 'ArrowDown' || e.key === 's') {
+      currentLane = Math.min(2, currentLane + 1);
+    }
+  }
+
+  document.addEventListener('keydown', handleKeyPress);
+  gameLoop();
 </script>
