@@ -136,7 +136,3 @@ function move(direction) {
     console.log("You reached the end!");
   }
 }
-
-// Example moves
-move("right");
-move("down");
