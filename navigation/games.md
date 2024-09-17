@@ -146,103 +146,91 @@ createBoard();
 
 Choose Rock, Paper, or Scissors and see if you can beat the computer!
 
-Dodge Game - don't hit the moving obstacles! 
+Dodge Game - don't hit the moving obstacles and score points as you go!
 
 <script>
-  let canvas = document.createElement("canvas");
-  let ctx = canvas.getContext("2d");
-  document.body.appendChild(canvas);
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  let dino = {
-    x: canvas.width / 4,
-    y: canvas.height / 2,
-    width: 50,
-    height: 50,
-    image: new Image(),
-    lives: 3,
-    score: 0
-  };
-  dino.image.src = 'dino.png'; 
-
+  let canvas, ctx;
+  let dino;
   let obstacles = [];
-  let lanes = [canvas.height / 3, canvas.height / 2, canvas.height * 2 / 3];
-  let currentLane = 1;
-  let speed = 2;
-
-  function drawDino() {
-    ctx.drawImage(dino.image, dino.x, lanes[currentLane], dino.width, dino.height);
+  let score = 0;
+  let lives = 3;
+  let keys = {};
+  let gameInterval;
+  let obstacleInterval;
+  
+  function setup() {
+    canvas = document.createElement('canvas');
+    canvas.width = 800;
+    canvas.height = 400;
+    document.body.appendChild(canvas);
+    ctx = canvas.getContext('2d');
+    
+    dino = { x: 50, y: 150, width: 40, height: 40 };
+    
+    document.addEventListener('keydown', (e) => keys[e.key] = true);
+    document.addEventListener('keyup', (e) => keys[e.key] = false);
+    
+    gameInterval = setInterval(updateGame, 1000 / 60);
+    obstacleInterval = setInterval(createObstacle, 2000);
   }
 
-  function drawObstacles() {
-    for (let i = 0; i < obstacles.length; i++) {
+
+  function updateGame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+
+    if (keys['ArrowUp'] || keys['w']) {
+      dino.y = Math.max(0, dino.y - 10);
+    }
+    if (keys['ArrowDown'] || keys['s']) {
+      dino.y = Math.min(canvas.height - dino.height, dino.y + 10);
+    }
+    
+    ctx.fillStyle = 'green';
+    ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+    
+
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+      let obs = obstacles[i];
+      obs.x -= 5;
       ctx.fillStyle = 'red';
-      ctx.fillRect(obstacles[i].x, obstacles[i].y, 50, 50);
-    }
-  }
-
-  function moveObstacles() {
-    for (let i = 0; i < obstacles.length; i++) {
-      obstacles[i].x -= speed;
-      if (obstacles[i].x + 50 < 0) {
-        obstacles.splice(i, 1);
-        i--;
-      }
-    }
-  }
-
-  function detectCollision() {
-    for (let i = 0; i < obstacles.length; i++) {
-      if (
-        dino.x < obstacles[i].x + 50 &&
-        dino.x + dino.width > obstacles[i].x &&
-        lanes[currentLane] < obstacles[i].y + 50 &&
-        lanes[currentLane] + dino.height > obstacles[i].y
-      ) {
-        if (dino.lives > 1) {
-          dino.lives--;
+      ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+      
+      if (obs.x < dino.x + dino.width &&
+          obs.x + obs.width > dino.x &&
+          obs.y < dino.y + dino.height &&
+          obs.y + obs.height > dino.y) {
+        if (lives > 1) {
+          lives--;
           obstacles.splice(i, 1);
-          return;
         } else {
-          alert('Game Over!');
-          document.location.reload();
+          clearInterval(gameInterval);
+          clearInterval(obstacleInterval);
+          alert('Game Over! Final Score: ' + score);
+          return;
         }
       }
+      
+      if (obs.x + obs.width < 0) {
+        obstacles.splice(i, 1);
+      }
     }
-  }
-
-  function updateScore() {
-    dino.score++;
+    
+    score++;
     ctx.fillStyle = 'black';
-    ctx.font = '30px Arial';
-    ctx.fillText('Score: ' + dino.score, 10, 30);
+    ctx.fillText('Score: ' + score, 10, 20);
+    ctx.fillText('Lives: ' + lives, 10, 40);
   }
 
-  function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawDino();
-    drawObstacles();
-    moveObstacles();
-    detectCollision();
-    updateScore();
-    if (Math.random() < 0.02) {
-      obstacles.push({
-        x: canvas.width,
-        y: lanes[Math.floor(Math.random() * 3)]
-      });
-    }
-    requestAnimationFrame(gameLoop);
+  function createObstacle() {
+    let height = Math.random() * (canvas.height / 2);
+    obstacles.push({
+      x: canvas.width,
+      y: height,
+      width: 40,
+      height: 40
+    });
   }
 
-  function handleKeyPress(e) {
-    if (e.key === 'ArrowUp' || e.key === 'w') {
-      currentLane = Math.max(0, currentLane - 1);
-    } else if (e.key === 'ArrowDown' || e.key === 's') {
-      currentLane = Math.min(2, currentLane + 1);
-    }
-  }
-
-  document.addEventListener('keydown', handleKeyPress);
-  gameLoop();
+  setup();
 </script>
