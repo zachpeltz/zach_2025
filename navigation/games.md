@@ -88,21 +88,36 @@ function resetGame() {
 createBoard();
 </script>
 
-Hangman game - guess the word!
+Memory game - try to remember the cards!
 ```javascript
-let word = "javascript";
-let guesses = [];
-let remaining = 5;
+let cards = ["A", "A", "B", "B", "C", "C", "D", "D"];
+cards = cards.sort(() => Math.random() - 0.5);
+let flipped = [];
+let matches = 0;
 
-function guessLetter(letter) {
-  if (word.includes(letter)) {
-    console.log(`Correct guess: ${letter}`);
-  } else {
-    remaining--;
-    console.log(`Incorrect guess. Remaining lives: ${remaining}`);
-  }
-  guesses.push(letter);
-  if (remaining === 0) {
-    console.log("Game Over!");
+function flipCard(index) {
+  if (flipped.length < 2 && flipped.indexOf(index) === -1) {
+    flipped.push(index);
+    console.log(`Card flipped: ${cards[index]}`);
+    if (flipped.length === 2) {
+      checkMatch();
+    }
   }
 }
+
+function checkMatch() {
+  if (cards[flipped[0]] === cards[flipped[1]]) {
+    console.log(`Match!`);
+    matches++;
+    if (matches === cards.length / 2) {
+      console.log("You won the game!");
+    }
+  } else {
+    console.log("Not a match.");
+  }
+  flipped = [];
+}
+
+// Example play
+flipCard(0);
+flipCard(1);
