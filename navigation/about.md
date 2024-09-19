@@ -83,8 +83,8 @@ My life so far:
 - Lived in Cali my whole life and the both the weather and people especially in San Diego are nice
 
 <script src="https://utteranc.es/client.js"
-        repo="[https://zachpeltz.github.io/zach_2025/]"
-        issue-term="pathname"
+        repo="https://github.com/zachpeltz/zach_2025.git"
+        issue-term="https://zachpeltz.github.io/zach_2025/"
         theme="github-dark"
         crossorigin="anonymous"
         async>
