@@ -82,9 +82,10 @@ My life so far:
 - Played basketball, baseball, soccer, tennis, and golf most being on teams
 - Lived in Cali my whole life and the both the weather and people especially in San Diego are nice
 
+I am currently in CSP at Del Norte and don't have much experience but have worked with code for making websites before. I am getting better at technical skills, as my tech talk, tech growth, and tech sense
 <script src="https://utteranc.es/client.js"
-        repo="https://github.com/zachpeltz/zach_2025.git"
-        issue-term="https://zachpeltz.github.io/zach_2025/"
+        repo="zach_2025"
+        issue-term="/zach_2025"
         theme="github-dark"
         crossorigin="anonymous"
         async>
