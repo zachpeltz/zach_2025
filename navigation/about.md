@@ -81,3 +81,11 @@ My life so far:
 - High School at Del Norte, San Diego CA - Graduating in 2026
 - Played basketball, baseball, soccer, tennis, and golf most being on teams
 - Lived in Cali my whole life and the both the weather and people especially in San Diego are nice
+
+<script src="https://utteranc.es/client.js"
+        repo="[https://zachpeltz.github.io/zach_2025/]"
+        issue-term="pathname"
+        theme="github-dark"
+        crossorigin="anonymous"
+        async>
+</script> 
