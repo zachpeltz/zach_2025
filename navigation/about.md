@@ -2,6 +2,7 @@
 layout: page
 title: About
 permalink: /about/
+comments: true
 ---
 
 # I am Zach Peltz and I am 16 yrs. old 👍
