@@ -86,7 +86,7 @@ My life so far:
 I am currently in CSP at Del Norte and don't have much experience but have worked with code for making websites before. I am getting better at technical skills, as my tech talk, tech growth, and tech sense are improving as I am practicing working with tools and equipment. I have earned many trophies in sports and am still active in many, and am interested in learning how to code and love to play games and watch shows. Hope you like looking at my website and have fun exploring!
 
 <script src="https://utteranc.es/client.js"
-        repo="zach_2025"
+        repo="zachpeltz/zach_2025"
         issue-term="/zach_2025"
         theme="github-dark"
         crossorigin="anonymous"
