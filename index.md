@@ -11,7 +11,8 @@ hide: true
   <li><a href="https://zachpeltz.github.io/zach_2025/devops/hacks">Hacks</a></li>
   <li><a href="https://zachpeltz.github.io/zach_2025/snake/">Snake</a></li>
   <li><a href="https://zachpeltz.github.io/zach_2025/games/">Games</a></li>
-  <li><a href="https://zachpeltz.github.io/zach_2025/planningdocument/">PlanningDoc</a></li>
+  <li><a href="https://zachpeltz.github.io/zach_2025/planningdocument/">Planning Doc</a></li>
+  <li><a href="https://zachpeltz.github.io/zach_2025/cookieclicker/">Cookie Clicker</a></li>
 </ul>
 <style>
 ul {
