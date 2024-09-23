@@ -95,15 +95,15 @@ comments: true
     updateButtons();
   }
   function buyUpgrade(upgrade) {
-    if (upgrade === 1 && cookies >= 50) {
-      cookies -= 50;
+    if (upgrade === 1 && cookies >= 100) {
+      cookies -= 100;
       cookiesPerSecond += 1;
-    } else if (upgrade === 2 && cookies >= 200) {
-      cookies -= 200;
-      cookiesPerSecond += 5;
-    } else if (upgrade === 3 && cookies >= 500) {
+    } else if (upgrade === 2 && cookies >= 500) {
       cookies -= 500;
       cookiesPerSecond += 10;
+    } else if (upgrade === 3 && cookies >= 1000) {
+      cookies -= 1000;
+      cookiesPerSecond += 30;
     }
     updateDisplay();
     updateButtons();
