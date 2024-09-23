@@ -72,19 +72,19 @@ comments: true
     transform: scale(1);
   }
 </style>
-<h1>Enhanced Cookie Clicker</h1>
+<h1>Cookie Clicker Game</h1>
 <div class="cookie-container">
   <div class="cookie" id="cookie" onclick="clickCookie()"></div>
 </div>
 <div class="stats">
-  <p>:cookie: Cookies: <span id="cookieCount">0</span></p>
-  <p>:rocket: Cookies per second: <span id="cookiesPerSecond">0</span></p>
+  <p>:Cookies: <span id="cookieCount">0</span></p>
+  <p>:Cookies per second: <span id="cookiesPerSecond">0</span></p>
 </div>
 <div class="shop">
   <h2>Shop Upgrades</h2>
-  <button id="upgrade1" onclick="buyUpgrade(1)">+1 Cookie per Second (Cost: 50 cookies)</button>
-  <button id="upgrade2" onclick="buyUpgrade(2)">+5 Cookies per Second (Cost: 200 cookies)</button>
-  <button id="upgrade3" onclick="buyUpgrade(3)">+10 Cookies per Second (Cost: 500 cookies)</button>
+  <button id="upgrade1" onclick="buyUpgrade(1)">+1 Cookie per Second (Cost: 100 cookies)</button>
+  <button id="upgrade2" onclick="buyUpgrade(2)">+10 Cookies per Second (Cost: 500 cookies)</button>
+  <button id="upgrade3" onclick="buyUpgrade(3)">+30 Cookies per Second (Cost: 1000 cookies)</button>
 </div>
 <script>
   let cookies = 0;
