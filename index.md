@@ -13,6 +13,8 @@ hide: true
   <li><a href="https://zachpeltz.github.io/zach_2025/games/">Games</a></li>
   <li><a href="https://zachpeltz.github.io/zach_2025/planningdocument/">Planning Doc</a></li>
   <li><a href="https://zachpeltz.github.io/zach_2025/cookieclicker/">Cookie Clicker</a></li>
+  <li><a href="https://zachpeltz.github.io/zach_2025/sprint2summaries/">Summaries</a><li>
+  >
 </ul>
 <style>
 ul {
