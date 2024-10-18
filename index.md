@@ -14,8 +14,6 @@ hide: true
   <li><a href="https://zachpeltz.github.io/zach_2025/planningdocument/">Planning Doc</a></li>
   <li><a href="https://zachpeltz.github.io/zach_2025/cookieclicker/">Cookie Clicker</a></li>
   <li><a href="https://zachpeltz.github.io/zach_2025/sprint2summaries/">Summaries</a><li>
-  <li><a href="https://zachpeltz.github.io/zach_2025/3-10-summary/">Our page summary</a><li>
-  <li><a href="https://zachpeltz.github.io/zach_2025/Sprint2/">What I learned</a><li>
   >
 </ul>
 <style>
