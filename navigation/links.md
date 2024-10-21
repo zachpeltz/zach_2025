@@ -5,8 +5,8 @@ search_exclude: true
 permalink: /links/
 ---
 
-|Lesson   |Link to blog   |Page   |
-|---------|-----------------------|-------|
+|Lesson   |Link to blog   ||Page   |
+|---------|-----------------------||-------|
 | 3.1     |[3.1 Popcorn/homework](https://zachpeltz.github.io/zach_2025/2024/10/07/homework3_IPYNB_2_.html)||[3.1 Page](https://nighthawkcoders.github.io/portfolio_2025/csp/big-idea/p2/3-1)|
 | 3.2     |[3.2 Popcorn/homework](https://zachpeltz.github.io/zach_2025/2024/10/07/homework2_IPYNB_2_.html)||[3.2 Page](https://nighthawkcoders.github.io/portfolio_2025/csp/big-idea/p2/3-2/)|
 | 3.3     |[3.3 Popcorn/homework](https://zachpeltz.github.io/zach_2025/2024/10/09/homework4_IPYNB_2_.html)||[3.3 Page](https://nighthawkcoders.github.io/portfolio_2025/csp/big-idea/p2/3-3)|
