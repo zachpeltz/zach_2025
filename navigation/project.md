@@ -4,8 +4,6 @@ title: Project
 permalink: /project/
 ---
 
-import random
-
 <script>
 deck = list(range(1, 14)) * 4  # Four suits, values 1-13
 random.shuffle(deck)
