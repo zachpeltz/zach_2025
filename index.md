@@ -15,7 +15,7 @@ hide: true
   <li><a href="https://zachpeltz.github.io/zach_2025/cookieclicker/">Cookie Clicker</a></li>
   <li><a href="https://zachpeltz.github.io/zach_2025/sprint2summaries/">Summaries</a><li>
   <li><a href="https://zachpeltz.github.io/zach_2025/links/">Links</a><li>
- 
+   <li><a href="https://zachpeltz.github.io/zach_2025/project/">Project</a><li>
 <style>
 ul {
   list-style-type: none;
