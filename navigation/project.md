@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Project
-permalink: /oroject/
+permalink: /project/
 ---
 
 import random
