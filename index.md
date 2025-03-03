@@ -13,8 +13,9 @@ hide: true
   <li><a href="https://zachpeltz.github.io/zach_2025/games/">Games</a></li>
   <li><a href="https://zachpeltz.github.io/zach_2025/planningdocument/">Planning Doc</a></li>
   <li><a href="https://zachpeltz.github.io/zach_2025/cookieclicker/">Cookie Clicker</a></li>
-  <li><a href="https://zachpeltz.github.io/zach_2025/sprint2summaries/">Summaries</a><li>
-  <li><a href="https://zachpeltz.github.io/zach_2025/links/">Links</a><li>
+  <!-- Removed unwanted links -->
+</ul>
+
 <style>
 ul {
   list-style-type: none;
