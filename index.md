@@ -6,13 +6,13 @@ hide: true
 ---
 
 <ul>
-  <li><a href="/zach_2025/blogs/">Blogs</a></li>
-  <li><a href="/zach_2025/about/">About</a></li>
-  <li><a href="/zach_2025/devops/hacks">Hacks</a></li>
-  <li><a href="/zach_2025/snake/">Snake</a></li>
-  <li><a href="/zach_2025/games/">Games</a></li>
-  <li><a href="/zach_2025/planningdocument/">Planning Doc</a></li>
-  <li><a href="/zach_2025/cookieclicker/">Cookie Clicker</a></li>
+  <li><a href="https://zachpeltz.github.io/zach_2025/blogs/">Blogs</a></li>
+  <li><a href="https://zachpeltz.github.io/zach_2025/about/">About</a></li>
+  <li><a href="https://zachpeltz.github.io/zach_2025/devops/hacks">Hacks</a></li>
+  <li><a href="https://zachpeltz.github.io/zach_2025/snake/">Snake</a></li>
+  <li><a href="https://zachpeltz.github.io/zach_2025/games/">Games</a></li>
+  <li><a href="https://zachpeltz.github.io/zach_2025/planningdocument/">Planning Doc</a></li>
+  <li><a href="https://zachpeltz.github.io/zach_2025/cookieclicker/">Cookie Clicker</a></li>
 </ul>
 
 <style>
