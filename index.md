@@ -5,8 +5,7 @@ description: Home Page
 hide: true
 ---
 
-<table>
-    <tr>
+<ul>
   <li><a href="https://zachpeltz.github.io/zach_2025/blogs/">Blogs</a></li>
   <li><a href="https://zachpeltz.github.io/zach_2025/about/">About</a></li>
   <li><a href="https://zachpeltz.github.io/zach_2025/devops/hacks">Hacks</a></li>
@@ -14,8 +13,7 @@ hide: true
   <li><a href="https://zachpeltz.github.io/zach_2025/games/">Games</a></li>
   <li><a href="https://zachpeltz.github.io/zach_2025/planningdocument/">Planning Doc</a></li>
   <li><a href="https://zachpeltz.github.io/zach_2025/cookieclicker/">Cookie Clicker</a></li>
-    </tr>
-</table>
+</ul>
 
 <style>
 ul {
